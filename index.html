@@ -278,6 +278,33 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 </form>
 </dialog>
 
+<dialog id="accountDialog">
+  <h3>Nuovo conto</h3>
+  <form id="accountForm">
+    <div><label for="accountName">Nome conto</label><input id="accountName" required placeholder="es. Conto principale"></div>
+    <div><label for="accountInitial">Saldo iniziale</label><input id="accountInitial" type="number" inputmode="decimal" step="0.01" value="0"></div>
+    <div class="form-actions"><button type="button" class="secondary" onclick="accountDialog.close()">Annulla</button><button class="add" type="submit">Salva</button></div>
+  </form>
+</dialog>
+
+<dialog id="goalDialog">
+  <h3>Nuovo obiettivo</h3>
+  <form id="goalForm">
+    <div><label for="goalName">Nome obiettivo</label><input id="goalName" required placeholder="es. Vacanza"></div>
+    <div><label for="goalAmount">Importo obiettivo</label><input id="goalAmount" type="number" inputmode="decimal" min="0.01" step="0.01" required></div>
+    <div class="form-actions"><button type="button" class="secondary" onclick="goalDialog.close()">Annulla</button><button class="add" type="submit">Salva</button></div>
+  </form>
+</dialog>
+
+<dialog id="budgetDialog">
+  <h3>Nuovo budget</h3>
+  <form id="budgetForm">
+    <div><label for="budgetCategory">Categoria</label><select id="budgetCategory"><option>Alimentari</option><option>Casa</option><option>Trasporti</option><option>Svago</option><option>Shopping</option><option>Bollette</option><option>Salute</option><option>Altro</option></select></div>
+    <div><label for="budgetAmount">Budget mensile</label><input id="budgetAmount" type="number" inputmode="decimal" min="0.01" step="0.01" required></div>
+    <div class="form-actions"><button type="button" class="secondary" onclick="budgetDialog.close()">Annulla</button><button class="add" type="submit">Salva</button></div>
+  </form>
+</dialog>
+
 <script>
 const KEY="risparmi-app-v2", THEME_KEY="risparmi-theme", COLOR_KEY="risparmi-primary-color", CURRENCY_KEY="risparmi-currency";
 let movements=JSON.parse(localStorage.getItem(KEY)||"[]");
@@ -387,6 +414,18 @@ const movementDate=document.getElementById("date");
 const movementRecurrence=document.getElementById("recurrence");
 const movementEditId=document.getElementById("editId");
 const movementDialogTitle=document.getElementById("dialogTitle");
+const accountDialog=document.getElementById("accountDialog");
+const accountForm=document.getElementById("accountForm");
+const accountName=document.getElementById("accountName");
+const accountInitial=document.getElementById("accountInitial");
+const goalDialog=document.getElementById("goalDialog");
+const goalForm=document.getElementById("goalForm");
+const goalName=document.getElementById("goalName");
+const goalAmount=document.getElementById("goalAmount");
+const budgetDialog=document.getElementById("budgetDialog");
+const budgetForm=document.getElementById("budgetForm");
+const budgetCategory=document.getElementById("budgetCategory");
+const budgetAmount=document.getElementById("budgetAmount");
 
 const quickCategories=["Alimentari","Casa","Trasporti","Svago","Shopping","Bollette","Altro"];
 function renderCategoryShortcuts(){
@@ -471,13 +510,6 @@ function accountBalance(id){
     if(Number(x.accountId)!==Number(id))return sum;
     return sum+(x.type==="in"?x.amount:-x.amount);
   },0);
-}
-function populateDestinationSelect(){
-  const s=document.getElementById("destinationAccount");
-  if(!s)return;
-  const current=s.value;
-  s.innerHTML=accounts.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
-  if([...s.options].some(o=>o.value===current))s.value=current;
 }
 function renderAccounts(){
   populateAccountSelect();populateDestinationSelect();
