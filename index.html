@@ -423,6 +423,14 @@ function populateAccountSelect(){
     if([...s.options].some(o=>o.value===current))s.value=current;
   });
 }
+function populateDestinationSelect(){
+  const s=document.getElementById("destinationAccount");
+  if(!s)return;
+  const current=s.value;
+  s.innerHTML=accounts.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+  if([...s.options].some(o=>o.value===current))s.value=current;
+}
+
 function accountBalance(id){
   const a=accounts.find(x=>x.id===Number(id)); if(!a)return 0;
   return Number(a.initial||0)+movements.reduce((sum,x)=>{
