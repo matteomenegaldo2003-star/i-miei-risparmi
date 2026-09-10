@@ -84,10 +84,27 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 .app{padding:12px 12px 92px}header{align-items:flex-start;flex-direction:column}.summary{grid-template-columns:1fr}.top-actions{width:100%;flex-wrap:wrap}.balance{width:100%}.day{min-height:70px;padding:6px}.mov{font-size:10px}.goal-form,.period-form,.search-grid{grid-template-columns:1fr}.week div{font-size:10px}.bottom-nav{position:fixed;left:12px;right:12px;bottom:8px;max-width:none;margin:0}.nav-btn{flex:1;padding:9px 12px}.fab{display:block}
 .dialog-hint{line-height:1.35}.quick-types{gap:6px}.quick-type{padding:11px 6px;font-size:12px}
 }
+
+/* iPhone-first navigation and settings */
+.mobile-page-title{font-size:26px;margin:0 0 6px}.page-subtitle{color:var(--muted);margin:0 0 18px;font-size:14px}
+.settings-list{display:grid;gap:10px}.settings-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-bottom:1px solid var(--border)}.settings-item:last-child{border-bottom:0}.settings-item strong{display:block}.settings-item small{display:block;color:var(--muted);margin-top:3px;line-height:1.35}.settings-value{min-width:150px}.settings-value select{margin:0}.toggle{appearance:none;width:48px;height:30px;border-radius:99px;background:var(--surface2);border:1px solid var(--border);position:relative;cursor:pointer;flex:0 0 auto}.toggle:before{content:"";position:absolute;width:24px;height:24px;top:2px;left:2px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #0005;transition:.2s}.toggle:checked{background:var(--primary);border-color:var(--primary)}.toggle:checked:before{transform:translateX(18px)}
+.color-palette.large{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.color-palette.large .color-swatch{padding:10px 5px;font-size:11px}.color-palette.large .color-dot{width:28px;height:28px}
+.security-card{margin-top:18px}.security-status{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:99px;background:var(--surface2);font-size:12px;font-weight:700}.security-status.on{color:var(--success)}
+.lock-screen{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;padding:24px;z-index:99999}.lock-screen.show{display:flex}.lock-box{width:min(390px,100%);background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:0 20px 70px #0007;text-align:center}.lock-icon{width:58px;height:58px;border-radius:18px;background:color-mix(in srgb,var(--primary) 18%,transparent);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px}.lock-box h2{margin:0}.lock-box p{color:var(--muted);font-size:14px;line-height:1.45}.lock-box input{font-size:22px;text-align:center;letter-spacing:8px}.lock-actions{display:grid;gap:9px;margin-top:12px}.lock-error{color:var(--danger);font-size:13px;min-height:18px;margin-top:8px}.biometric-btn{display:none}.biometric-btn.available{display:block}
+.graphs-grid{display:grid;gap:18px}.graph-card{background:var(--surface);border-radius:18px;padding:18px;box-shadow:var(--shadow);overflow:hidden}.graph-card h3{margin:0 0 4px}.graph-card p{margin:0 0 12px}.graph-card canvas{height:240px}
+@media(max-width:700px){
+  .app{max-width:560px;margin:auto;padding:14px 14px 100px}
+  header{margin-bottom:16px}.app-subtitle{font-size:12px}.summary{gap:10px}.card{padding:15px}.calendar,.details,.goal-card,.chart-card,.settings-card,.accounts-card,.budgets-card,.search-card{padding:16px;border-radius:20px}
+  .day{min-height:64px;border-radius:10px}.mov{font-size:9px}.monthbar h2{font-size:18px}.week,.days{gap:4px}
+  .bottom-nav{left:10px;right:10px;bottom:7px;padding:7px;border-radius:20px;backdrop-filter:blur(18px)}.nav-btn{padding:8px 6px;font-size:19px}.nav-btn span{font-size:11px}
+  dialog{width:calc(100vw - 24px);max-width:430px;max-height:88vh;padding:18px;border-radius:22px;overflow:auto}dialog form{gap:9px}.quick-types{grid-template-columns:1fr 1fr 1fr}.quick-type{min-width:0;padding:10px 4px}.color-palette.large{grid-template-columns:repeat(4,1fr)}.settings-item{align-items:flex-start}.settings-value{min-width:130px}
+  .graphs-grid{gap:12px}.graph-card canvas{height:220px}
+}
+
 </style>
 
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#0A84FF">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -99,35 +116,6 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 <header>
   <div><h1><span class="ui-icon icon-green">€</span>I Miei Risparmi</h1><p class="app-subtitle">Controlla entrate, uscite e risparmi in un unico posto.</p></div>
   <div class="top-actions">
-    <button class="secondary settings-toggle" id="settingsToggle"><span class="nav-icon icon-gray">⚙</span></button>
-    <div class="settings-card" id="settingsPanel" style="padding:8px 10px;box-shadow:none">
-      <div class="theme-row" id="themeButtons">
-        <button class="theme-btn" data-theme-choice="light">☀️ Chiaro</button>
-        <button class="theme-btn" data-theme-choice="dark">🌙 Scuro</button>
-        <button class="theme-btn" data-theme-choice="system">📱 Sistema</button>
-      </div>
-      <div class="color-settings">
-        <div class="color-title">Colore principale</div>
-        <div class="color-palette" id="colorPalette" aria-label="Scegli il colore principale">
-          <button type="button" class="color-swatch" data-color="#0A84FF" data-contrast="#fff" style="--swatch:#0A84FF"><span class="color-dot"></span><span>Blu iOS</span></button>
-          <button type="button" class="color-swatch" data-color="#A78BFA" data-contrast="#fff" style="--swatch:#A78BFA"><span class="color-dot"></span><span>Viola</span></button>
-          <button type="button" class="color-swatch" data-color="#30D158" data-contrast="#06210f" style="--swatch:#30D158"><span class="color-dot"></span><span>Verde</span></button>
-          <button type="button" class="color-swatch" data-color="#FF453A" data-contrast="#fff" style="--swatch:#FF453A"><span class="color-dot"></span><span>Rosso</span></button>
-          <button type="button" class="color-swatch" data-color="#FF9F0A" data-contrast="#1c1200" style="--swatch:#FF9F0A"><span class="color-dot"></span><span>Arancio</span></button>
-          <button type="button" class="color-swatch" data-color="#FF375F" data-contrast="#fff" style="--swatch:#FF375F"><span class="color-dot"></span><span>Rosa</span></button>
-          <button type="button" class="color-swatch" data-color="#64D2FF" data-contrast="#00131c" style="--swatch:#64D2FF"><span class="color-dot"></span><span>Turchese</span></button>
-          <button type="button" class="color-swatch" data-color="#5E5CE6" data-contrast="#fff" style="--swatch:#5E5CE6"><span class="color-dot"></span><span>Indaco</span></button>
-          <button type="button" class="color-swatch" data-color="#8E8E93" data-contrast="#fff" style="--swatch:#8E8E93"><span class="color-dot"></span><span>Grigio</span></button>
-          <button type="button" class="color-swatch" data-color="#F2F2F7" data-contrast="#111" style="--swatch:#F2F2F7"><span class="color-dot"></span><span>Bianco</span></button>
-          <button type="button" class="color-swatch" data-color="#FFD60A" data-contrast="#191400" style="--swatch:#FFD60A"><span class="color-dot"></span><span>Oro</span></button>
-          <button type="button" class="color-swatch" data-color="#000000" data-contrast="#fff" style="--swatch:#000000"><span class="color-dot"></span><span>Nero</span></button>
-        </div>
-      </div>
-      <div class="backup-actions">
-        <button class="secondary" id="exportData">Esporta dati</button>
-        <label class="secondary import-label">Importa dati<input id="importData" type="file" accept=".json" hidden></label>
-      </div>
-    </div>
     <div class="balance"><small>Saldo attuale</small><strong id="balance">€ 0,00</strong></div>
   </div>
 </header>
@@ -159,10 +147,10 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 </section>
 </section>
 
-<section class="page" id="statsPage">
+<section class="page" id="graphsPage">
+  <h2 class="mobile-page-title"><span class="ui-icon icon-cyan">▥</span>Grafici</h2>
+  <p class="page-subtitle">Analizza entrate, uscite e andamento del risparmio.</p>
   <section class="settings-card period-card">
-    <h2><span class="ui-icon icon-cyan">▥</span>Statistiche</h2>
-    <p class="empty-text">Scegli liberamente il periodo dell'anno da analizzare.</p>
     <div class="period-form">
       <div><label>Dal</label><input id="periodStart" type="date"></div>
       <div><label>Al</label><input id="periodEnd" type="date"></div>
@@ -175,43 +163,75 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
       <button class="secondary preset" data-period="all">Tutto</button>
     </div>
   </section>
-
   <section class="summary stats-summary">
     <div class="card"><span>Entrate periodo</span><strong class="income" id="periodIncome">€ 0,00</strong></div>
     <div class="card"><span>Uscite periodo</span><strong class="expense" id="periodExpense">€ 0,00</strong></div>
     <div class="card"><span>Risparmio periodo</span><strong class="saving" id="periodSaving">€ 0,00</strong></div>
   </section>
+  <div class="graphs-grid">
+    <section class="graph-card"><h3>Entrate e uscite</h3><p class="empty-text">Confronto mensile nel periodo selezionato.</p><canvas id="incomeExpenseChart" width="900" height="360"></canvas></section>
+    <section class="graph-card"><h3>Risparmio mensile</h3><p class="empty-text">Differenza tra entrate e uscite per ogni mese.</p><canvas id="savingsChart" width="900" height="360"></canvas></section>
+  </div>
+</section>
 
-  <section class="search-card">
-    <div class="section-head"><h3><span class="ui-icon icon-blue">⌕</span>Cerca movimenti</h3></div>
-    <div class="search-grid">
-      <input id="searchText" placeholder="Descrizione o categoria">
-      <select id="searchType"><option value="all">Tutti</option><option value="in">Entrate</option><option value="out">Uscite</option><option value="transfer">Trasferimenti</option></select>
-      <select id="searchAccount"><option value="all">Tutti i conti</option></select>
-      <button class="secondary" id="clearSearch">Pulisci</button>
+<section class="page" id="settingsPage">
+  <h2 class="mobile-page-title"><span class="ui-icon icon-gray">⚙</span>Impostazioni</h2>
+  <p class="page-subtitle">Personalizza l'aspetto, la valuta e la sicurezza dell'app.</p>
+
+  <section class="settings-card">
+    <h3>Aspetto</h3>
+    <div class="theme-row" id="themeButtons">
+      <button class="theme-btn" data-theme-choice="light">☀️ Chiaro</button>
+      <button class="theme-btn" data-theme-choice="dark">🌙 Scuro</button>
+      <button class="theme-btn" data-theme-choice="system">📱 Sistema</button>
     </div>
-    <div id="searchResults"></div>
+    <div class="color-settings" style="margin-top:16px">
+      <div class="color-title">Colore principale</div>
+      <div class="color-palette large" id="colorPalette" aria-label="Scegli il colore principale">
+        <button type="button" class="color-swatch" data-color="#0A84FF" data-contrast="#fff" style="--swatch:#0A84FF"><span class="color-dot"></span><span>Blu iOS</span></button>
+        <button type="button" class="color-swatch" data-color="#A78BFA" data-contrast="#fff" style="--swatch:#A78BFA"><span class="color-dot"></span><span>Viola</span></button>
+        <button type="button" class="color-swatch" data-color="#30D158" data-contrast="#06210f" style="--swatch:#30D158"><span class="color-dot"></span><span>Verde</span></button>
+        <button type="button" class="color-swatch" data-color="#FF453A" data-contrast="#fff" style="--swatch:#FF453A"><span class="color-dot"></span><span>Rosso</span></button>
+        <button type="button" class="color-swatch" data-color="#FF9F0A" data-contrast="#1c1200" style="--swatch:#FF9F0A"><span class="color-dot"></span><span>Arancio</span></button>
+        <button type="button" class="color-swatch" data-color="#FF375F" data-contrast="#fff" style="--swatch:#FF375F"><span class="color-dot"></span><span>Rosa</span></button>
+        <button type="button" class="color-swatch" data-color="#64D2FF" data-contrast="#00131c" style="--swatch:#64D2FF"><span class="color-dot"></span><span>Turchese</span></button>
+        <button type="button" class="color-swatch" data-color="#5E5CE6" data-contrast="#fff" style="--swatch:#5E5CE6"><span class="color-dot"></span><span>Indaco</span></button>
+        <button type="button" class="color-swatch" data-color="#8E8E93" data-contrast="#fff" style="--swatch:#8E8E93"><span class="color-dot"></span><span>Grigio</span></button>
+        <button type="button" class="color-swatch" data-color="#F2F2F7" data-contrast="#111" style="--swatch:#F2F2F7"><span class="color-dot"></span><span>Argento</span></button>
+        <button type="button" class="color-swatch" data-color="#FFD60A" data-contrast="#191400" style="--swatch:#FFD60A"><span class="color-dot"></span><span>Oro</span></button>
+        <button type="button" class="color-swatch" data-color="#000000" data-contrast="#fff" style="--swatch:#000000"><span class="color-dot"></span><span>Nero</span></button>
+      </div>
+    </div>
   </section>
 
-  <section class="chart-card">
-    <h3>Entrate e uscite</h3>
-    <p class="empty-text">Confronto mensile all'interno del periodo selezionato.</p>
-    <canvas id="incomeExpenseChart" width="900" height="320"></canvas>
+  <section class="settings-card" style="margin-top:18px">
+    <h3>Valuta</h3>
+    <div class="settings-item">
+      <div><strong>Valuta dell'app</strong><small>Viene usata per saldi, movimenti, budget e obiettivi.</small></div>
+      <div class="settings-value"><select id="currencySelect">
+        <option value="EUR">€ Euro (EUR)</option><option value="USD">$ Dollaro USA (USD)</option><option value="GBP">£ Sterlina britannica (GBP)</option><option value="CHF">CHF Franco svizzero (CHF)</option><option value="JPY">¥ Yen giapponese (JPY)</option><option value="CNY">¥ Yuan cinese (CNY)</option><option value="CAD">$ Dollaro canadese (CAD)</option><option value="AUD">$ Dollaro australiano (AUD)</option><option value="NZD">$ Dollaro neozelandese (NZD)</option><option value="SEK">kr Corona svedese (SEK)</option><option value="NOK">kr Corona norvegese (NOK)</option><option value="DKK">kr Corona danese (DKK)</option><option value="PLN">zł Zloty polacco (PLN)</option><option value="CZK">Kč Corona ceca (CZK)</option><option value="HUF">Ft Fiorino ungherese (HUF)</option><option value="INR">₹ Rupia indiana (INR)</option><option value="BRL">R$ Real brasiliano (BRL)</option><option value="MXN">$ Peso messicano (MXN)</option><option value="KRW">₩ Won sudcoreano (KRW)</option><option value="SGD">$ Dollaro di Singapore (SGD)</option><option value="HKD">$ Dollaro di Hong Kong (HKD)</option><option value="TRY">₺ Lira turca (TRY)</option><option value="ZAR">R Rand sudafricano (ZAR)</option><option value="AED">د.إ Dirham degli Emirati (AED)</option><option value="SAR">﷼ Riyal saudita (SAR)</option><option value="ILS">₪ Shekel israeliano (ILS)</option><option value="THB">฿ Baht thailandese (THB)</option><option value="IDR">Rp Rupia indonesiana (IDR)</option><option value="MYR">RM Ringgit malese (MYR)</option><option value="PHP">₱ Peso filippino (PHP)</option><option value="RUB">₽ Rublo russo (RUB)</option>
+      </select></div>
+    </div>
   </section>
 
-  <section class="chart-card">
-    <h3>Risparmio mensile</h3>
-    <p class="empty-text">Differenza tra entrate e uscite per ogni mese del periodo.</p>
-    <canvas id="savingsChart" width="900" height="280"></canvas>
+  <section class="settings-card security-card">
+    <div class="section-head"><div><h3 style="margin-bottom:4px">Sicurezza</h3><small class="empty-text">Proteggi l'accesso all'app.</small></div><span id="securityStatus" class="security-status">🔓 Disattivata</span></div>
+    <div class="settings-item"><div><strong>Blocca all'apertura</strong><small>Richiede una verifica quando riapri l'app.</small></div><input id="securityEnabled" class="toggle" type="checkbox"></div>
+    <div class="settings-item"><div><strong>Codice di accesso</strong><small>Imposta un PIN da 4 a 8 cifre come metodo di sblocco.</small></div><button class="secondary" id="setPasscodeBtn" type="button">Imposta codice</button></div>
+    <div class="settings-item"><div><strong>Face ID / Touch ID</strong><small>Usa la biometria del dispositivo quando il browser la supporta.</small></div><button class="secondary" id="registerBiometricBtn" type="button">Configura</button></div>
+    <div class="backup-actions"><button class="secondary" id="exportData">Esporta dati</button><label class="secondary import-label">Importa dati<input id="importData" type="file" accept=".json" hidden></label></div>
   </section>
 
+  <section class="accounts-card">
+    <div class="section-head"><h3>Conti</h3><button class="secondary" id="addAccountBtn">+ Conto</button></div>
+    <div id="accountsList"></div>
+  </section>
   <section class="budgets-card">
-    <div class="section-head"><h3><span class="ui-icon icon-orange">▤</span>Budget mensili</h3><button class="secondary" id="addBudgetBtn">+ Budget</button></div>
+    <div class="section-head"><h3>Budget mensili</h3><button class="secondary" id="addBudgetBtn">+ Budget</button></div>
     <div id="budgetsList"></div>
   </section>
-
   <section class="goal-card">
-    <h3><span class="ui-icon icon-gold">★</span>Obiettivi di risparmio</h3>
+    <div class="section-head"><h3>Obiettivi di risparmio</h3><button class="secondary" id="addGoalBtn">+ Obiettivo</button></div>
     <div id="goalView"></div>
   </section>
 </section>
@@ -219,11 +239,22 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 
 <nav class="bottom-nav" aria-label="Navigazione principale">
   <button class="nav-btn active" data-page="calendarPage"><span class="nav-icon icon-blue">□</span><span>Calendario</span></button>
-  <button class="nav-btn" data-page="statsPage"><span class="nav-icon icon-cyan">▥</span><span>Statistiche</span></button>
+  <button class="nav-btn" data-page="graphsPage"><span class="nav-icon icon-cyan">▥</span><span>Grafici</span></button>
+  <button class="nav-btn" data-page="settingsPage"><span class="nav-icon icon-gray">⚙</span><span>Impostazioni</span></button>
 </nav>
 </div>
 
 
+
+<div id="lockScreen" class="lock-screen" aria-modal="true">
+  <div class="lock-box">
+    <div class="lock-icon">🔒</div><h2>App protetta</h2>
+    <p>Sblocca I Miei Risparmi per continuare.</p>
+    <div id="passcodeArea"><input id="unlockPasscode" type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="••••••••" aria-label="Codice di accesso"></div>
+    <div class="lock-actions"><button class="add" id="unlockPasscodeBtn" type="button">Sblocca con codice</button><button class="secondary biometric-btn" id="unlockBiometricBtn" type="button">Face ID / Touch ID</button></div>
+    <div class="lock-error" id="lockError"></div>
+  </div>
+</div>
 
 <dialog id="accountDialog">
 <h3>Nuovo conto</h3>
@@ -279,7 +310,7 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 </dialog>
 
 <script>
-const KEY="risparmi-app-v2", THEME_KEY="risparmi-theme", COLOR_KEY="risparmi-primary-color";
+const KEY="risparmi-app-v2", THEME_KEY="risparmi-theme", COLOR_KEY="risparmi-primary-color", CURRENCY_KEY="risparmi-currency";
 let movements=JSON.parse(localStorage.getItem(KEY)||"[]");
 let accounts=JSON.parse(localStorage.getItem("risparmi-accounts")||"null")||[{id:1,name:"Conto principale",initial:0}];
 let goals=JSON.parse(localStorage.getItem("risparmi-goals")||"[]");
@@ -287,7 +318,8 @@ let budgets=JSON.parse(localStorage.getItem("risparmi-budgets")||"[]");
 let current=new Date(); current.setDate(1);
 let selected=new Date();
 
-const eur=n=>new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(n);
+let currency=localStorage.getItem(CURRENCY_KEY)||"EUR";
+const money=n=>new Intl.NumberFormat("it-IT",{style:"currency",currency}).format(Number(n)||0);
 const iso=d=>{const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}-${String(x.getDate()).padStart(2,"0")}`};
 function save(){
   localStorage.setItem(KEY,JSON.stringify(movements));
@@ -312,6 +344,50 @@ setTheme(savedTheme);
 const savedColor=localStorage.getItem(COLOR_KEY)||"#0A84FF";
 const savedColorButton=[...document.querySelectorAll(".color-swatch")].find(b=>b.dataset.color.toLowerCase()===savedColor.toLowerCase());
 setPrimaryColor(savedColor,savedColorButton?.dataset.contrast||"#fff");
+function applyCurrency(value){
+  currency=value||"EUR";localStorage.setItem(CURRENCY_KEY,currency);
+  const sel=document.getElementById("currencySelect");if(sel)sel.value=currency;
+  document.querySelectorAll("[data-currency-label]").forEach(el=>el.textContent=currency);
+  render();
+}
+
+const SECURITY_KEY="risparmi-security-v1";
+let security=JSON.parse(localStorage.getItem(SECURITY_KEY)||"null")||{enabled:false,passcodeHash:null,biometricId:null};
+const textEncoder=new TextEncoder();
+async function hashText(value){const data=await crypto.subtle.digest("SHA-256",textEncoder.encode(value));return [...new Uint8Array(data)].map(b=>b.toString(16).padStart(2,"0")).join("")}
+function saveSecurity(){localStorage.setItem(SECURITY_KEY,JSON.stringify(security));updateSecurityUI()}
+function updateSecurityUI(){
+  const en=document.getElementById("securityEnabled"),st=document.getElementById("securityStatus"),pb=document.getElementById("setPasscodeBtn"),rb=document.getElementById("registerBiometricBtn");
+  if(en)en.checked=!!security.enabled;
+  if(st){st.className="security-status"+(security.enabled?" on":"");st.textContent=security.enabled?"🔐 Attiva":"🔓 Disattivata"}
+  if(pb)pb.textContent=security.passcodeHash?"Cambia codice":"Imposta codice";
+  if(rb)rb.textContent=security.biometricId?"Riconfigura":"Configura";
+}
+function randomBuffer(n){const a=new Uint8Array(n);crypto.getRandomValues(a);return a}
+function bufferToBase64(buffer){return btoa(String.fromCharCode(...new Uint8Array(buffer)))}
+function base64ToBuffer(str){return Uint8Array.from(atob(str),c=>c.charCodeAt(0)).buffer}
+async function configureBiometric(){
+  if(!window.PublicKeyCredential||!navigator.credentials){alert("La biometria non è supportata da questo browser/dispositivo.");return}
+  try{
+    const cred=await navigator.credentials.create({publicKey:{challenge:randomBuffer(32),rp:{name:"I Miei Risparmi"},user:{id:randomBuffer(16),name:"utente",displayName:"I Miei Risparmi"},pubKeyCredParams:[{type:"public-key",alg:-7},{type:"public-key",alg:-257}],authenticatorSelection:{authenticatorAttachment:"platform",userVerification:"required"},timeout:60000}});
+    if(cred){security.biometricId=bufferToBase64(cred.rawId);saveSecurity();alert("Biometria configurata. Ora puoi usarla per sbloccare l'app.");}
+  }catch(e){alert("Configurazione biometrica annullata o non disponibile.");}
+}
+async function verifyBiometric(){
+  if(!security.biometricId)return false;
+  try{const cred=await navigator.credentials.get({publicKey:{challenge:randomBuffer(32),allowCredentials:[{type:"public-key",id:base64ToBuffer(security.biometricId)}],userVerification:"required",timeout:60000}});return !!cred}catch(e){return false}
+}
+function showLock(){if(!security.enabled)return;document.getElementById("lockScreen").classList.add("show");document.getElementById("unlockPasscode").value="";updateBiometricAvailability()}
+function hideLock(){document.getElementById("lockScreen").classList.remove("show");document.getElementById("unlockPasscode").value="";document.getElementById("lockError").textContent=""}
+function updateBiometricAvailability(){const b=document.getElementById("unlockBiometricBtn");if(b&&security.biometricId)b.classList.add("available")}
+async function unlockWithPasscode(){const value=document.getElementById("unlockPasscode").value;if(!value)return;const h=await hashText(value);if(h===security.passcodeHash){hideLock()}else{document.getElementById("lockError").textContent="Codice non corretto."}}
+async function setupPasscode(){
+  const current=security.passcodeHash?prompt("Inserisci il codice attuale (4-8 cifre):"):null;
+  if(security.passcodeHash){if(!current||await hashText(current)!==security.passcodeHash){alert("Codice attuale non corretto.");return}}
+  const code=prompt("Scegli un nuovo codice di 4-8 cifre:");if(!/^\\d{4,8}$/.test(code||"")){alert("Il codice deve contenere da 4 a 8 cifre.");return}
+  security.passcodeHash=await hashText(code);security.enabled=true;saveSecurity();alert("Codice impostato. Il blocco all'apertura è attivo.");
+}
+
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});
 document.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
 document.querySelectorAll(".color-swatch").forEach(b=>b.onclick=()=>setPrimaryColor(b.dataset.color,b.dataset.contrast));
@@ -328,15 +404,15 @@ function render(){
     cell.innerHTML=`<div class="num">${d}</div>`;
     movements.filter(x=>x.date===key).forEach(x=>{
       const el=document.createElement("div");el.className="mov "+x.type;
-      el.textContent=(x.type==="in"?"+ ":x.type==="out"?"- ":"↔ ")+eur(x.amount)+" "+x.description;cell.appendChild(el);
+      el.textContent=(x.type==="in"?"+ ":x.type==="out"?"- ":"↔ ")+money(x.amount)+" "+x.description;cell.appendChild(el);
     });
     cell.onclick=()=>{selected=date;render()};box.appendChild(cell);
   }
 
   const prefix=`${y}-${String(m+1).padStart(2,"0")}`, month=movements.filter(x=>x.date.startsWith(prefix));
   const inc=month.filter(x=>x.type==="in").reduce((a,x)=>a+x.amount,0),out=month.filter(x=>x.type==="out").reduce((a,x)=>a+x.amount,0);
-  document.getElementById("monthIncome").textContent=eur(inc);document.getElementById("monthExpense").textContent=eur(out);document.getElementById("monthSaving").textContent=eur(inc-out);
-  const total=accounts.reduce((a,x)=>a+accountBalance(x.id),0);document.getElementById("balance").textContent=eur(total);
+  document.getElementById("monthIncome").textContent=money(inc);document.getElementById("monthExpense").textContent=money(out);document.getElementById("monthSaving").textContent=money(inc-out);
+  const total=accounts.reduce((a,x)=>a+accountBalance(x.id),0);document.getElementById("balance").textContent=money(total);
 
   document.getElementById("detailTitle").textContent="Movimenti del "+selected.toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"});
   const list=document.getElementById("movements");list.innerHTML="";
@@ -346,11 +422,11 @@ function render(){
   day.forEach(x=>{
     const r=document.createElement("div");r.className="row";
     r.innerHTML=`<div><strong>${escapeHtml(x.description)}</strong><br><small>${escapeHtml(x.category)} · ${escapeHtml(accounts.find(a=>Number(a.id)===Number(x.accountId))?.name||"Conto principale")}</small></div>
-      <div style="text-align:right"><strong class="${x.type==="in"?"income":x.type==="out"?"expense":"saving"}">${x.type==="in"?"+":x.type==="out"?"-":"↔"} ${eur(x.amount)}</strong>
+      <div style="text-align:right"><strong class="${x.type==="in"?"income":x.type==="out"?"expense":"saving"}">${x.type==="in"?"+":x.type==="out"?"-":"↔"} ${money(x.amount)}</strong>
       <div class="row-actions"><button class="icon-btn" onclick="editMovement(${x.id})">✏️</button><button class="icon-btn" onclick="deleteMovement(${x.id})">🗑️</button></div></div>`;
     list.appendChild(r);
   });
-  renderAccounts();renderGoal();renderBudgets();renderSearch();if(document.getElementById("statsPage").classList.contains("active"))renderStats();
+  renderAccounts();renderGoal();renderBudgets();renderSearch();if(document.getElementById("graphsPage").classList.contains("active"))renderStats();
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function editMovement(id){
@@ -440,7 +516,7 @@ movementForm.onsubmit=e=>{
 };
 
 document.getElementById("goalForm").onsubmit=e=>{
-  e.preventDefault();goal={name:goalName.value.trim(),amount:Number(goalAmount.value)};localStorage.setItem("risparmi-goal",JSON.stringify(goal));renderGoal();e.target.reset();
+  e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();e.target.reset();
 };
 
 function populateAccountSelect(){
@@ -467,7 +543,7 @@ function accountBalance(id){
 function renderAccounts(){
   populateAccountSelect();populateDestinationSelect();
   const list=document.getElementById("accountsList");
-  list.innerHTML=accounts.map(a=>`<div class="account-row"><div><div class="account-name">${escapeHtml(a.name)}</div><small class="transfer-note">Saldo iniziale ${eur(Number(a.initial||0))}</small></div><div class="account-actions"><strong class="account-balance">${eur(accountBalance(a.id))}</strong><button class="mini-btn" onclick="deleteAccount(${a.id})">🗑️</button></div></div>`).join("");
+  list.innerHTML=accounts.map(a=>`<div class="account-row"><div><div class="account-name">${escapeHtml(a.name)}</div><small class="transfer-note">Saldo iniziale ${money(Number(a.initial||0))}</small></div><div class="account-actions"><strong class="account-balance">${money(accountBalance(a.id))}</strong><button class="mini-btn" onclick="deleteAccount(${a.id})">🗑️</button></div></div>`).join("");
 }
 function deleteAccount(id){
   if(accounts.length<=1){alert("Devi mantenere almeno un conto.");return}
@@ -481,7 +557,7 @@ function renderGoal(){
   el.innerHTML=goals.map(g=>{
     const pct=Math.max(0,Math.min(100,totalBalance/Number(g.amount)*100));
     return `<div class="goal-item"><div class="goal-top"><strong>${escapeHtml(g.name)}</strong><button class="mini-btn goal-delete" onclick="deleteGoal(${g.id})">🗑️</button></div>
-    <div class="progress"><div style="width:${pct}%"></div></div><div class="goal-meta"><span>${eur(Math.max(0,totalBalance))}</span><span>${eur(g.amount)} · ${pct.toFixed(0)}%</span></div></div>`;
+    <div class="progress"><div style="width:${pct}%"></div></div><div class="goal-meta"><span>${money(Math.max(0,totalBalance))}</span><span>${money(g.amount)} · ${pct.toFixed(0)}%</span></div></div>`;
   }).join("");
 }
 function deleteGoal(id){goals=goals.filter(g=>g.id!==Number(id));save();}
@@ -492,7 +568,7 @@ function renderBudgets(){
   list.innerHTML=budgets.map(b=>{
     const spent=movements.filter(x=>x.type==="out"&&x.category===b.category&&x.date.startsWith(month)).reduce((a,x)=>a+x.amount,0);
     const pct=Math.min(100,spent/b.amount*100), over=spent>b.amount;
-    return `<div class="budget-row"><div class="budget-top"><strong>${escapeHtml(b.category)}</strong><span class="${over?'budget-over':''}">${eur(spent)} / ${eur(b.amount)}</span></div><div class="budget-progress"><div style="width:${pct}%"></div></div><small class="${over?'budget-over':''}">${over?'Budget superato di '+eur(spent-b.amount):'Restano '+eur(b.amount-spent)}</small><button class="mini-btn" style="float:right" onclick="deleteBudget(${b.id})">🗑️</button></div>`;
+    return `<div class="budget-row"><div class="budget-top"><strong>${escapeHtml(b.category)}</strong><span class="${over?'budget-over':''}">${money(spent)} / ${money(b.amount)}</span></div><div class="budget-progress"><div style="width:${pct}%"></div></div><small class="${over?'budget-over':''}">${over?'Budget superato di '+money(spent-b.amount):'Restano '+money(b.amount-spent)}</small><button class="mini-btn" style="float:right" onclick="deleteBudget(${b.id})">🗑️</button></div>`;
   }).join("");
 }
 function deleteBudget(id){budgets=budgets.filter(b=>b.id!==Number(id));save();}
@@ -501,7 +577,7 @@ function renderSearch(){
   const result=movements.filter(x=>(!q||x.description.toLowerCase().includes(q)||x.category.toLowerCase().includes(q))&&(t==="all"||x.type===t)&&(a==="all"||Number(x.accountId)===Number(a))).sort((a,b)=>b.date.localeCompare(a.date));
   const el=document.getElementById("searchResults");
   if(!result.length){el.innerHTML='<p class="empty-text">Nessun movimento trovato.</p>';return}
-  el.innerHTML=result.slice(0,100).map(x=>`<div class="search-result"><div><strong>${escapeHtml(x.description)}</strong><br><small>${x.date} · ${escapeHtml(x.category)} · ${escapeHtml(accounts.find(a=>Number(a.id)===Number(x.accountId))?.name||"Conto principale")}</small></div><strong class="${x.type==="in"?"income":x.type==="out"?"expense":"saving"}">${x.type==="in"?"+":x.type==="out"?"-":"↔"} ${eur(x.amount)}</strong></div>`).join("");
+  el.innerHTML=result.slice(0,100).map(x=>`<div class="search-result"><div><strong>${escapeHtml(x.description)}</strong><br><small>${x.date} · ${escapeHtml(x.category)} · ${escapeHtml(accounts.find(a=>Number(a.id)===Number(x.accountId))?.name||"Conto principale")}</small></div><strong class="${x.type==="in"?"income":x.type==="out"?"expense":"saving"}">${x.type==="in"?"+":x.type==="out"?"-":"↔"} ${money(x.amount)}</strong></div>`).join("");
 }
 function clearGoal(){goal=null;renderGoal()}
 function getPeriodData(){
@@ -525,9 +601,9 @@ function getPeriodData(){
 function renderStats(){
   const data=getPeriodData();
   const income=data.reduce((a,x)=>a+x.income,0),expense=data.reduce((a,x)=>a+x.expense,0);
-  document.getElementById("periodIncome").textContent=eur(income);
-  document.getElementById("periodExpense").textContent=eur(expense);
-  document.getElementById("periodSaving").textContent=eur(income-expense);
+  document.getElementById("periodIncome").textContent=money(income);
+  document.getElementById("periodExpense").textContent=money(expense);
+  document.getElementById("periodSaving").textContent=money(income-expense);
   drawGroupedChart(data);drawSavingsChart(data);
 }
 function setupDefaultPeriod(){
@@ -563,14 +639,14 @@ function drawBarChart(canvas,data,grouped){
       const bh=Math.abs(value)*scale,y=value>=0?zero-bh:zero;
       ctx.fillStyle=primary;ctx.fillRect(base+dx-bw/2,y,bw,Math.max(1,bh));
       ctx.fillStyle=text;ctx.font="10px system-ui";
-      ctx.fillText(eur(value),base+dx,value>=0?Math.max(12,y-5):Math.min(h-30,y+bh+14));
+      ctx.fillText(money(value),base+dx,value>=0?Math.max(12,y-5):Math.min(h-30,y+bh+14));
     };
     if(grouped){draw(x.a,-(bw+gap/2)/2);draw(x.b,(bw+gap/2)/2)}
     else draw(x.a,0);
     ctx.fillStyle=muted;ctx.font="11px system-ui";ctx.fillText(x.label,base,h-15);
   });
   ctx.fillStyle=muted;ctx.textAlign="right";ctx.font="10px system-ui";
-  ctx.fillText(eur(max),pad.l-8,pad.t+5);ctx.fillText("€ 0",pad.l-8,zero+4);ctx.fillText("-"+eur(max),pad.l-8,h-pad.b+5);
+  ctx.fillText(money(max),pad.l-8,pad.t+5);ctx.fillText("€ 0",pad.l-8,zero+4);ctx.fillText("-"+money(max),pad.l-8,h-pad.b+5);
   ctx.textAlign="left";
 }
 
@@ -579,7 +655,7 @@ document.querySelectorAll(".nav-btn").forEach(btn=>btn.onclick=()=>{
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   btn.classList.add("active");document.getElementById(btn.dataset.page).classList.add("active");
-  if(btn.dataset.page==="statsPage")renderStats();
+  if(btn.dataset.page==="graphsPage")renderStats();
 });
 document.getElementById("applyPeriod").onclick=renderStats;
 document.querySelectorAll(".preset").forEach(btn=>btn.onclick=()=>setPreset(btn.dataset.period));
@@ -587,7 +663,7 @@ setupDefaultPeriod();
 
 
 document.getElementById("exportData").onclick=()=>{
-  const payload={version:2,exportedAt:new Date().toISOString(),movements,accounts,goals,budgets,theme:localStorage.getItem(THEME_KEY)||"dark"};
+  const payload={version:3,exportedAt:new Date().toISOString(),movements,accounts,goals,budgets,theme:localStorage.getItem(THEME_KEY)||"dark",color:localStorage.getItem(COLOR_KEY)||"#0A84FF",currency:currency};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="i-miei-risparmi-backup.json";a.click();URL.revokeObjectURL(a.href);
 };
@@ -599,12 +675,12 @@ document.getElementById("importData").onchange=e=>{
       const p=JSON.parse(reader.result);
       if(!Array.isArray(p.movements)||!Array.isArray(p.accounts)){throw new Error()}
       movements=p.movements;accounts=p.accounts;goals=Array.isArray(p.goals)?p.goals:[];budgets=Array.isArray(p.budgets)?p.budgets:[];
-      if(p.theme)setTheme(p.theme);save();alert("Dati importati correttamente.");
+      if(p.theme)setTheme(p.theme);if(p.color){const b=[...document.querySelectorAll(".color-swatch")].find(x=>x.dataset.color.toLowerCase()===String(p.color).toLowerCase());setPrimaryColor(p.color,b?.dataset.contrast||"#fff");}if(p.currency)applyCurrency(p.currency);save();alert("Dati importati correttamente.");
     }catch{alert("File non valido.");}
   };reader.readAsText(file);e.target.value="";
 };
 
-document.getElementById("settingsToggle").onclick=()=>document.getElementById("settingsPanel").classList.toggle("hidden");
+
 document.getElementById("addAccountBtn").onclick=()=>{accountForm.reset();accountInitial.value="0";accountDialog.showModal()};
 document.getElementById("accountForm").onsubmit=e=>{e.preventDefault();accounts.push({id:Date.now(),name:accountName.value.trim(),initial:Number(accountInitial.value)});save();accountDialog.close();};
 document.getElementById("addGoalBtn").onclick=()=>{goalForm.reset();goalDialog.showModal()};
@@ -614,9 +690,19 @@ document.getElementById("budgetForm").onsubmit=e=>{e.preventDefault();budgets=bu
 ["searchText","searchType","searchAccount"].forEach(id=>document.getElementById(id).addEventListener(id==="searchText"?"input":"change",renderSearch));
 document.getElementById("clearSearch").onclick=()=>{searchText.value="";searchType.value="all";searchAccount.value="all";renderSearch()};
 document.getElementById("movementFilter").onchange=render;
-populateAccountSelect();populateDestinationSelect();renderCategoryShortcuts();
 
+document.getElementById("currencySelect").onchange=e=>applyCurrency(e.target.value);
+document.getElementById("securityEnabled").onchange=e=>{if(e.target.checked&&!security.passcodeHash&&!security.biometricId){e.target.checked=false;alert("Imposta prima un codice o configura Face ID / Touch ID.");return}security.enabled=e.target.checked;saveSecurity();if(security.enabled)showLock()};
+document.getElementById("setPasscodeBtn").onclick=setupPasscode;
+document.getElementById("registerBiometricBtn").onclick=configureBiometric;
+document.getElementById("unlockPasscodeBtn").onclick=unlockWithPasscode;
+document.getElementById("unlockPasscode").addEventListener("keydown",e=>{if(e.key==="Enter")unlockWithPasscode()});
+document.getElementById("unlockBiometricBtn").onclick=async()=>{if(await verifyBiometric())hideLock();else document.getElementById("lockError").textContent="Verifica biometrica non riuscita."};
+
+populateAccountSelect();populateDestinationSelect();renderCategoryShortcuts();
+applyCurrency(currency);updateSecurityUI();
 render();
+setTimeout(showLock,250);
 </script>
 
 <script>
