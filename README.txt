@@ -1,13 +1,7 @@
-# I Miei Risparmi – PWA iPhone
+I Miei Risparmi – v5
 
-Versione aggiornata con:
-- Calendario come schermata iniziale
-- Pagina Grafici separata
-- Pagina Impostazioni separata
-- Colore principale personalizzabile
-- Valute internazionali
-- Protezione con codice e supporto Face ID/Touch ID tramite WebAuthn quando disponibile
-- Aggiunta/modifica movimenti ottimizzata per iPhone
-- Service Worker con aggiornamento HTML online per evitare versioni obsolete
-
-Carica tutti i file nel repository GitHub Pages.
+Schermata iniziale: Calendario.
+Pagine: Calendario, Grafici, Impostazioni.
+Conti, Budget mensili e Obiettivi di risparmio sono nella pagina Grafici.
+Valuta, colori e sicurezza sono nella pagina Impostazioni.
+La versione usa un service worker v9 con aggiornamento online prioritario.

@@ -1,4 +1,4 @@
-const CACHE = "i-miei-risparmi-v7";
+const CACHE = "i-miei-risparmi-v9";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-180.png", "./icons/icon-192.png", "./icons/icon-512.png"];
 
 self.addEventListener("install", event => {
@@ -9,28 +9,21 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll({type:"window", includeUncontrolled:true}))
+      .then(clients => clients.forEach(client => client.postMessage({type:"APP_UPDATED"})))
   );
 });
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
-  // HTML sempre aggiornato quando online: evita che GitHub Pages mostri una vecchia versione.
-  if (event.request.mode === "navigate" || url.pathname.endsWith("/index.html")) {
-    event.respondWith(
-      fetch(event.request).then(response => {
-        const copy = response.clone();
-        caches.open(CACHE).then(cache => cache.put("./index.html", copy));
-        return response;
-      }).catch(() => caches.match("./index.html"))
-    );
-    return;
-  }
+  if (url.origin !== self.location.origin) return;
+  // Online: usa sempre la versione pubblicata; offline: usa la cache.
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+    fetch(event.request).then(response => {
       const copy = response.clone();
       caches.open(CACHE).then(cache => cache.put(event.request, copy));
       return response;
-    }).catch(() => caches.match("./index.html")))
+    }).catch(() => caches.match(event.request).then(cached => cached || caches.match("./index.html")))
   );
 });
