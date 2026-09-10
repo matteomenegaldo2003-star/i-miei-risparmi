@@ -201,13 +201,6 @@ function accountBalance(id){
     return sum+(x.type==="in"?x.amount:-x.amount);
   },0);
 }
-function populateDestinationSelect(){
-  const s=document.getElementById("destinationAccount");
-  if(!s)return;
-  const old=s.value;
-  s.innerHTML=accounts.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
-  if([...s.options].some(o=>o.value===old))s.value=old;
-}
 function renderAccounts(){
   populateAccountSelect();populateDestinationSelect();
   const list=document.getElementById("accountsList");
