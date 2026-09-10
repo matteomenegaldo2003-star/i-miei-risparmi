@@ -40,43 +40,6 @@ function applyCurrency(value){
   render();
 }
 
-const SECURITY_KEY="risparmi-security-v1";
-let security=JSON.parse(localStorage.getItem(SECURITY_KEY)||"null")||{enabled:false,passcodeHash:null,biometricId:null};
-const textEncoder=new TextEncoder();
-async function hashText(value){const data=await crypto.subtle.digest("SHA-256",textEncoder.encode(value));return [...new Uint8Array(data)].map(b=>b.toString(16).padStart(2,"0")).join("")}
-function saveSecurity(){localStorage.setItem(SECURITY_KEY,JSON.stringify(security));updateSecurityUI()}
-function updateSecurityUI(){
-  const en=document.getElementById("securityEnabled"),st=document.getElementById("securityStatus"),pb=document.getElementById("setPasscodeBtn"),rb=document.getElementById("registerBiometricBtn");
-  if(en)en.checked=!!security.enabled;
-  if(st){st.className="security-status"+(security.enabled?" on":"");st.textContent=security.enabled?"🔐 Attiva":"🔓 Disattivata"}
-  if(pb)pb.textContent=security.passcodeHash?"Cambia codice":"Imposta codice";
-  if(rb)rb.textContent=security.biometricId?"Riconfigura":"Configura";
-}
-function randomBuffer(n){const a=new Uint8Array(n);crypto.getRandomValues(a);return a}
-function bufferToBase64(buffer){return btoa(String.fromCharCode(...new Uint8Array(buffer)))}
-function base64ToBuffer(str){return Uint8Array.from(atob(str),c=>c.charCodeAt(0)).buffer}
-async function configureBiometric(){
-  if(!window.PublicKeyCredential||!navigator.credentials){alert("La biometria non è supportata da questo browser/dispositivo.");return}
-  try{
-    const cred=await navigator.credentials.create({publicKey:{challenge:randomBuffer(32),rp:{name:"I Miei Risparmi"},user:{id:randomBuffer(16),name:"utente",displayName:"I Miei Risparmi"},pubKeyCredParams:[{type:"public-key",alg:-7},{type:"public-key",alg:-257}],authenticatorSelection:{authenticatorAttachment:"platform",userVerification:"required"},timeout:60000}});
-    if(cred){security.biometricId=bufferToBase64(cred.rawId);saveSecurity();alert("Biometria configurata. Ora puoi usarla per sbloccare l'app.");}
-  }catch(e){alert("Configurazione biometrica annullata o non disponibile.");}
-}
-async function verifyBiometric(){
-  if(!security.biometricId)return false;
-  try{const cred=await navigator.credentials.get({publicKey:{challenge:randomBuffer(32),allowCredentials:[{type:"public-key",id:base64ToBuffer(security.biometricId)}],userVerification:"required",timeout:60000}});return !!cred}catch(e){return false}
-}
-function showLock(){if(!security.enabled)return;document.getElementById("lockScreen").classList.add("show");document.getElementById("unlockPasscode").value="";updateBiometricAvailability()}
-function hideLock(){document.getElementById("lockScreen").classList.remove("show");document.getElementById("unlockPasscode").value="";document.getElementById("lockError").textContent=""}
-function updateBiometricAvailability(){const b=document.getElementById("unlockBiometricBtn");if(b&&security.biometricId)b.classList.add("available")}
-async function unlockWithPasscode(){const value=document.getElementById("unlockPasscode").value;if(!value)return;const h=await hashText(value);if(h===security.passcodeHash){hideLock()}else{document.getElementById("lockError").textContent="Codice non corretto."}}
-async function setupPasscode(){
-  const current=security.passcodeHash?prompt("Inserisci il codice attuale (4-8 cifre):"):null;
-  if(security.passcodeHash){if(!current||await hashText(current)!==security.passcodeHash){alert("Codice attuale non corretto.");return}}
-  const code=prompt("Scegli un nuovo codice di 4-8 cifre:");if(!/^\\d{4,8}$/.test(code||"")){alert("Il codice deve contenere da 4 a 8 cifre.");return}
-  security.passcodeHash=await hashText(code);security.enabled=true;saveSecurity();alert("Codice impostato. Il blocco all'apertura è attivo.");
-}
-
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});
 document.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
 document.querySelectorAll(".color-swatch").forEach(b=>b.onclick=()=>setPrimaryColor(b.dataset.color,b.dataset.contrast));
@@ -238,6 +201,13 @@ function accountBalance(id){
     return sum+(x.type==="in"?x.amount:-x.amount);
   },0);
 }
+function populateDestinationSelect(){
+  const s=document.getElementById("destinationAccount");
+  if(!s)return;
+  const current=s.value;
+  s.innerHTML=accounts.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+  if([...s.options].some(o=>o.value===current))s.value=current;
+}
 function renderAccounts(){
   populateAccountSelect();populateDestinationSelect();
   const list=document.getElementById("accountsList");
@@ -271,9 +241,10 @@ function renderBudgets(){
 }
 function deleteBudget(id){budgets=budgets.filter(b=>b.id!==Number(id));save();}
 function renderSearch(){
-  const q=document.getElementById("searchText").value.trim().toLowerCase(),t=document.getElementById("searchType").value,a=document.getElementById("searchAccount").value;
+  const qEl=document.getElementById("searchText"),tEl=document.getElementById("searchType"),aEl=document.getElementById("searchAccount"),el=document.getElementById("searchResults");
+  if(!qEl||!tEl||!aEl||!el)return;
+  const q=qEl.value.trim().toLowerCase(),t=tEl.value,a=aEl.value;
   const result=movements.filter(x=>(!q||x.description.toLowerCase().includes(q)||x.category.toLowerCase().includes(q))&&(t==="all"||x.type===t)&&(a==="all"||Number(x.accountId)===Number(a))).sort((a,b)=>b.date.localeCompare(a.date));
-  const el=document.getElementById("searchResults");
   if(!result.length){el.innerHTML='<p class="empty-text">Nessun movimento trovato.</p>';return}
   el.innerHTML=result.slice(0,100).map(x=>`<div class="search-result"><div><strong>${escapeHtml(x.description)}</strong><br><small>${x.date} · ${escapeHtml(x.category)} · ${escapeHtml(accounts.find(a=>Number(a.id)===Number(x.accountId))?.name||"Conto principale")}</small></div><strong class="${x.type==="in"?"income":x.type==="out"?"expense":"saving"}">${x.type==="in"?"+":x.type==="out"?"-":"↔"} ${money(x.amount)}</strong></div>`).join("");
 }
@@ -306,7 +277,10 @@ function renderStats(){
 }
 function setupDefaultPeriod(){
   const now=new Date(),start=new Date(now.getFullYear(),0,1),end=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  periodStart.value=iso(start);periodEnd.value=iso(end);
+  const startEl=document.getElementById("periodStart");
+  const endEl=document.getElementById("periodEnd");
+  if(startEl) startEl.value=iso(start);
+  if(endEl) endEl.value=iso(end);
 }
 function setPreset(kind){
   const now=new Date(),end=iso(now);let start;
@@ -314,7 +288,11 @@ function setPreset(kind){
   else if(kind==="quarter")start=iso(new Date(now.getFullYear(),now.getMonth()-2,1));
   else if(kind==="year")start=iso(new Date(now.getFullYear(),0,1));
   else {start=movements.length?movements.reduce((min,x)=>x.date<min?x.date:min,iso(now)):iso(new Date(now.getFullYear(),0,1))}
-  periodStart.value=start;periodEnd.value=end;renderStats();
+  const startEl=document.getElementById("periodStart");
+  const endEl=document.getElementById("periodEnd");
+  if(startEl) startEl.value=start;
+  if(endEl) endEl.value=end;
+  renderStats();
 }
 function drawGroupedChart(data){
   drawBarChart(document.getElementById("incomeExpenseChart"),data.map(x=>({label:x.label,a:x.income,b:x.expense})),true);
@@ -386,19 +364,17 @@ document.getElementById("addGoalBtn").onclick=()=>{goalForm.reset();goalDialog.s
 document.getElementById("goalForm").onsubmit=e=>{e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();};
 document.getElementById("addBudgetBtn").onclick=()=>{budgetForm.reset();budgetDialog.showModal()};
 document.getElementById("budgetForm").onsubmit=e=>{e.preventDefault();budgets=budgets.filter(b=>b.category!==budgetCategory.value);budgets.push({id:Date.now(),category:budgetCategory.value,amount:Number(budgetAmount.value)});save();budgetDialog.close();};
-["searchText","searchType","searchAccount"].forEach(id=>document.getElementById(id).addEventListener(id==="searchText"?"input":"change",renderSearch));
-document.getElementById("clearSearch").onclick=()=>{searchText.value="";searchType.value="all";searchAccount.value="all";renderSearch()};
+["searchText","searchType","searchAccount"].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener(id==="searchText"?"input":"change",renderSearch);});
+if(document.getElementById("clearSearch"))document.getElementById("clearSearch").onclick=()=>{const q=document.getElementById("searchText"),t=document.getElementById("searchType"),a=document.getElementById("searchAccount");if(q)q.value="";if(t)t.value="all";if(a)a.value="all";renderSearch()};
 document.getElementById("movementFilter").onchange=render;
 
 document.getElementById("currencySelect").onchange=e=>applyCurrency(e.target.value);
-document.getElementById("securityEnabled").onchange=e=>{if(e.target.checked&&!security.passcodeHash&&!security.biometricId){e.target.checked=false;alert("Imposta prima un codice o configura Face ID / Touch ID.");return}security.enabled=e.target.checked;saveSecurity();if(security.enabled)showLock()};
-document.getElementById("setPasscodeBtn").onclick=setupPasscode;
-document.getElementById("registerBiometricBtn").onclick=configureBiometric;
-document.getElementById("unlockPasscodeBtn").onclick=unlockWithPasscode;
-document.getElementById("unlockPasscode").addEventListener("keydown",e=>{if(e.key==="Enter")unlockWithPasscode()});
-document.getElementById("unlockBiometricBtn").onclick=async()=>{if(await verifyBiometric())hideLock();else document.getElementById("lockError").textContent="Verifica biometrica non riuscita."};
 
 populateAccountSelect();populateDestinationSelect();renderCategoryShortcuts();
-applyCurrency(currency);updateSecurityUI();
-render();
-setTimeout(showLock,250);
+applyCurrency(currency);
+function initializeCalendarView(){
+  try{ activatePage("calendarPage"); render(); }
+  catch(error){ console.error("Errore inizializzazione calendario:",error); }
+}
+initializeCalendarView();
+window.addEventListener("pageshow",initializeCalendarView);

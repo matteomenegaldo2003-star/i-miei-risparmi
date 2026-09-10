@@ -472,6 +472,13 @@ function accountBalance(id){
     return sum+(x.type==="in"?x.amount:-x.amount);
   },0);
 }
+function populateDestinationSelect(){
+  const s=document.getElementById("destinationAccount");
+  if(!s)return;
+  const current=s.value;
+  s.innerHTML=accounts.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+  if([...s.options].some(o=>o.value===current))s.value=current;
+}
 function renderAccounts(){
   populateAccountSelect();populateDestinationSelect();
   const list=document.getElementById("accountsList");
