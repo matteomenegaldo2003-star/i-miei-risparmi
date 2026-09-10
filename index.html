@@ -387,7 +387,11 @@ function render(){
       <div class="row-actions"><button class="icon-btn" onclick="editMovement(${x.id})">✏️</button><button class="icon-btn" onclick="deleteMovement(${x.id})">🗑️</button></div></div>`;
     list.appendChild(r);
   });
-  renderAccounts();renderGoal();renderBudgets();renderSearch();if(document.getElementById("graphsPage").classList.contains("active"))renderStats();
+  if(document.getElementById("accountsList"))renderAccounts();
+  if(document.getElementById("goalView"))renderGoal();
+  if(document.getElementById("budgetsList"))renderBudgets();
+  renderSearch();
+  if(document.getElementById("graphsPage")?.classList.contains("active"))renderStats();
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function editMovement(id){
