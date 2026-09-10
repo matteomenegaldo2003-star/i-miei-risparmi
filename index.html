@@ -384,7 +384,7 @@ async function unlockWithPasscode(){const value=document.getElementById("unlockP
 async function setupPasscode(){
   const current=security.passcodeHash?prompt("Inserisci il codice attuale (4-8 cifre):"):null;
   if(security.passcodeHash){if(!current||await hashText(current)!==security.passcodeHash){alert("Codice attuale non corretto.");return}}
-  const code=prompt("Scegli un nuovo codice di 4-8 cifre:");if(!/^\\d{4,8}$/.test(code||"")){alert("Il codice deve contenere da 4 a 8 cifre.");return}
+  const code=prompt("Scegli un nuovo codice di 4-8 cifre:");if(!/^\d{4,8}$/.test(code||"")){alert("Il codice deve contenere da 4 a 8 cifre.");return}
   security.passcodeHash=await hashText(code);security.enabled=true;saveSecurity();alert("Codice impostato. Il blocco all'apertura è attivo.");
 }
 
@@ -702,7 +702,10 @@ document.getElementById("unlockBiometricBtn").onclick=async()=>{if(await verifyB
 populateAccountSelect();populateDestinationSelect();renderCategoryShortcuts();
 applyCurrency(currency);updateSecurityUI();
 render();
-setTimeout(showLock,250);
+// Apri sempre il calendario all'avvio. Se la protezione è attiva, il blocco appare sopra il calendario.
+showLock();
+// Quando la PWA torna in primo piano, richiedi nuovamente lo sblocco.
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)showLock()});
 </script>
 
 <script>

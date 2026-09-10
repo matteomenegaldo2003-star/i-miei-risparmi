@@ -1,17 +1,13 @@
-# I Miei Risparmi — versione iPhone
+# I Miei Risparmi – PWA iPhone
 
-Questa cartella è una PWA: puoi installarla sulla Home dell'iPhone come una vera app.
+Versione aggiornata con:
+- Calendario come schermata iniziale
+- Pagina Grafici separata
+- Pagina Impostazioni separata
+- Colore principale personalizzabile
+- Valute internazionali
+- Protezione con codice e supporto Face ID/Touch ID tramite WebAuthn quando disponibile
+- Aggiunta/modifica movimenti ottimizzata per iPhone
+- Service Worker con aggiornamento HTML online per evitare versioni obsolete
 
-## Installazione gratuita
-1. Pubblica questa cartella su un servizio HTTPS gratuito, per esempio GitHub Pages.
-2. Apri l'indirizzo HTTPS con Safari su iPhone.
-3. Tocca Condividi → Aggiungi alla schermata Home.
-4. Se disponibile, scegli "Apri come app web", poi Aggiungi.
-
-I dati dei movimenti vengono salvati localmente nel browser dell'iPhone. Usa "Esporta dati" dentro l'app per creare periodicamente un backup JSON.
-
-## Contenuto
-- index.html — app
-- manifest.webmanifest — configurazione PWA
-- sw.js — funzionamento offline/cache
-- icons/ — icone dell'app
+Carica tutti i file nel repository GitHub Pages.
