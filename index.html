@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark light">
 <title>I Miei Risparmi</title>
-<meta name="app-version" content="v6-fix-calendario-movimenti">
+<meta name="app-version" content="v7-iphone-calendar-final">
 <style>
 :root{
   --bg:#f5f6f8;--surface:#fff;--surface2:#f0f2f5;--text:#1d2433;--muted:#697386;
@@ -347,7 +347,12 @@ function applyCurrency(value){
   render();
 }
 
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});
+(function(){
+  const mq=matchMedia("(prefers-color-scheme: dark)");
+  const onThemeChange=()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")};
+  if(typeof mq.addEventListener==="function") mq.addEventListener("change",onThemeChange);
+  else if(typeof mq.addListener==="function") mq.addListener(onThemeChange);
+})();
 document.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
 document.querySelectorAll(".color-swatch").forEach(b=>b.onclick=()=>setPrimaryColor(b.dataset.color,b.dataset.contrast));
 
@@ -443,13 +448,26 @@ const openMovement=()=>{
   movementForm.reset();populateAccountSelect();populateDestinationSelect();renderCategoryShortcuts();
   movementType.value="out";document.querySelectorAll(".quick-type").forEach(x=>x.classList.toggle("active",x.dataset.quickType==="out"));
   document.getElementById("destinationWrap").style.display="none";movementCategory.disabled=false;movementRecurrence.disabled=false;
-  movementEditId.value="";movementDialogTitle.textContent="Nuovo movimento";movementDate.value=iso(selected);dialog.showModal();
+  movementEditId.value="";movementDialogTitle.textContent="Nuovo movimento";movementDate.value=iso(selected);
+  if(typeof dialog.showModal==="function"){
+    dialog.showModal();
+  }else{
+    dialog.setAttribute("open","");
+    dialog.style.display="block";
+    dialog.style.position="fixed";
+    dialog.style.left="50%";dialog.style.top="50%";dialog.style.transform="translate(-50%,-50%)";
+    dialog.style.zIndex="1000";
+  }
   setTimeout(()=>movementAmount.focus(),80);
 };
 document.getElementById("fab").onclick=openMovement;
 
 document.getElementById("addBtn").onclick=openMovement;
-document.getElementById("cancel").onclick=()=>dialog.close();
+function closeMovementDialog(){
+  if(typeof dialog.close==="function" && dialog.open && typeof dialog.showModal==="function") dialog.close();
+  else {dialog.removeAttribute("open");dialog.style.display="";dialog.style.position="";dialog.style.left="";dialog.style.top="";dialog.style.transform="";dialog.style.zIndex="";}
+}
+document.getElementById("cancel").onclick=closeMovementDialog;
 movementForm.onsubmit=e=>{
   e.preventDefault();
   const data={
@@ -483,7 +501,7 @@ movementForm.onsubmit=e=>{
       }
     }
   }
-  save();dialog.close();movementForm.reset();
+  save();closeMovementDialog();movementForm.reset();
 };
 
 document.getElementById("goalForm").onsubmit=e=>{
@@ -695,7 +713,8 @@ function initializeCalendarView(){
     document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page==="calendarPage"));
   }
 }
-initializeCalendarView();
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",initializeCalendarView,{once:true});
+else initializeCalendarView();
 window.addEventListener("pageshow",initializeCalendarView);
 </script>
 
