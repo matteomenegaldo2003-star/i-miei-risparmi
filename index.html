@@ -649,12 +649,14 @@ document.querySelectorAll(".preset").forEach(btn=>btn.onclick=()=>setPreset(btn.
 setupDefaultPeriod();
 
 
-document.getElementById("exportData").onclick=()=>{
+const exportDataEl=document.getElementById("exportData");
+if(exportDataEl) exportDataEl.onclick=()=>{
   const payload={version:3,exportedAt:new Date().toISOString(),movements,accounts,goals,budgets,theme:localStorage.getItem(THEME_KEY)||"dark",color:localStorage.getItem(COLOR_KEY)||"#0A84FF",currency:currency};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="i-miei-risparmi-backup.json";a.click();URL.revokeObjectURL(a.href);
 };
-document.getElementById("importData").onchange=e=>{
+const importDataEl=document.getElementById("importData");
+if(importDataEl) importDataEl.onchange=e=>{
   const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=()=>{
