@@ -180,6 +180,13 @@ document.getElementById("goalForm").onsubmit=e=>{
   e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();e.target.reset();
 };
 
+function populateDestinationSelect(){
+  const select=document.getElementById("destinationAccount");
+  if(!select)return;
+  const current=select.value;
+  select.innerHTML=accounts.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+  if([...select.options].some(o=>o.value===current))select.value=current;
+}
 function populateAccountSelect(){
   const selects=[document.getElementById("account"),document.getElementById("searchAccount")];
   selects.forEach((s,si)=>{
