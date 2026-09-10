@@ -110,6 +110,9 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
   .details .add,.fab{min-height:44px}
 }
 
+
+.graph-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.graph-head>div{min-width:0}.graph-expand{flex:0 0 auto;border:0;background:var(--surface2);color:var(--text);width:40px;height:40px;border-radius:12px;font-size:22px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.chart-overlay{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);padding:14px}.chart-overlay.open{display:flex}.chart-fullscreen{width:100%;height:100%;background:var(--surface);border-radius:18px;padding:16px;display:flex;flex-direction:column;box-shadow:var(--shadow)}.chart-fullscreen-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.chart-fullscreen-head h3{margin:0}.chart-fullscreen-body{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}.chart-fullscreen-body canvas{width:100%;height:100%;max-height:none}
+@media(max-width:700px) and (orientation:portrait){.chart-overlay.open .chart-fullscreen{transform:rotate(90deg);width:100vh;height:100vw;transform-origin:center center}.chart-overlay.open{align-items:center;justify-content:center;overflow:hidden;padding:0}.chart-overlay.open .chart-fullscreen-head{flex:0 0 auto}.chart-overlay.open .chart-fullscreen-body{min-height:0}.chart-overlay.open .chart-fullscreen-body canvas{width:100%;height:100%}}
 </style>
 
 <link rel="manifest" href="manifest.webmanifest">
@@ -178,8 +181,8 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
     <div class="card"><span>Risparmio periodo</span><strong class="saving" id="periodSaving">€ 0,00</strong></div>
   </section>
   <div class="graphs-grid">
-    <section class="graph-card"><h3>Entrate e uscite</h3><p class="empty-text">Confronto mensile nel periodo selezionato.</p><canvas id="incomeExpenseChart" width="900" height="360"></canvas></section>
-    <section class="graph-card"><h3>Risparmio mensile</h3><p class="empty-text">Differenza tra entrate e uscite per ogni mese.</p><canvas id="savingsChart" width="900" height="360"></canvas></section>
+    <section class="graph-card"><div class="graph-head"><div><h3>Entrate e uscite</h3><p class="empty-text">Confronto mensile nel periodo selezionato.</p></div><button type="button" class="graph-expand" data-chart="incomeExpenseChart" aria-label="Apri grafico in orizzontale">↗</button></div><canvas id="incomeExpenseChart" width="900" height="360"></canvas></section>
+    <section class="graph-card"><div class="graph-head"><div><h3>Risparmio mensile</h3><p class="empty-text">Differenza tra entrate e uscite per ogni mese.</p></div><button type="button" class="graph-expand" data-chart="savingsChart" aria-label="Apri grafico in orizzontale">↗</button></div><canvas id="savingsChart" width="900" height="360"></canvas></section>
   </div>
   <section class="accounts-card">
     <div class="section-head"><h3>Conti</h3><button class="secondary" id="addAccountBtn">+ Conto</button></div>
@@ -251,6 +254,13 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 </div>
 
 
+
+<div id="chartOverlay" class="chart-overlay" aria-hidden="true">
+  <div class="chart-fullscreen">
+    <div class="chart-fullscreen-head"><h3 id="chartFullscreenTitle">Grafico</h3><button type="button" id="closeChartFullscreen" class="graph-expand" aria-label="Chiudi grafico">×</button></div>
+    <div class="chart-fullscreen-body"><canvas id="fullscreenChart" width="1400" height="700"></canvas></div>
+  </div>
+</div>
 
 <dialog id="dialog">
 <h3 id="dialogTitle">Nuovo movimento</h3>

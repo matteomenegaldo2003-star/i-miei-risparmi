@@ -40,9 +40,7 @@ function applyCurrency(value){
   render();
 }
 
-const colorSchemeQuery=matchMedia("(prefers-color-scheme: dark)");
-if(colorSchemeQuery.addEventListener) colorSchemeQuery.addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});
-else if(colorSchemeQuery.addListener) colorSchemeQuery.addListener(()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});
 document.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
 document.querySelectorAll(".color-swatch").forEach(b=>b.onclick=()=>setPrimaryColor(b.dataset.color,b.dataset.contrast));
 
@@ -80,9 +78,7 @@ function render(){
       <div class="row-actions"><button class="icon-btn" onclick="editMovement(${x.id})">✏️</button><button class="icon-btn" onclick="deleteMovement(${x.id})">🗑️</button></div></div>`;
     list.appendChild(r);
   });
-  renderAccounts();renderGoal();renderBudgets();renderSearch();
-  const graphsPage=document.getElementById("graphsPage");
-  if(graphsPage && graphsPage.classList.contains("active"))renderStats();
+  renderAccounts();renderGoal();renderBudgets();renderSearch();if(document.getElementById("graphsPage").classList.contains("active"))renderStats();
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function editMovement(id){
@@ -331,14 +327,38 @@ function drawBarChart(canvas,data,grouped){
 }
 
 
+function openChartFullscreen(chartId){
+  const overlay=document.getElementById("chartOverlay"), target=document.getElementById("fullscreenChart");
+  if(!overlay||!target)return;
+  const source=document.getElementById(chartId);
+  if(!source)return;
+  document.getElementById("chartFullscreenTitle").textContent=chartId==="savingsChart"?"Risparmio mensile":"Entrate e uscite";
+  overlay.classList.add("open"); overlay.setAttribute("aria-hidden","false");
+  const data=getPeriodData();
+  if(chartId==="savingsChart")drawSavingsChartTo(target,data); else drawGroupedChartTo(target,data);
+  const go=async()=>{try{if(overlay.requestFullscreen)await overlay.requestFullscreen();}catch(e){} try{if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock("landscape");}catch(e){}};
+  go();
+}
+function closeChartFullscreen(){
+  const overlay=document.getElementById("chartOverlay"); if(!overlay)return;
+  overlay.classList.remove("open"); overlay.setAttribute("aria-hidden","true");
+  try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}
+  try{if(document.fullscreenElement)document.exitFullscreen();}catch(e){}
+}
+function drawGroupedChartTo(canvas,data){drawBarChart(canvas,data.map(x=>({label:x.label,a:x.income,b:x.expense})),true);}
+function drawSavingsChartTo(canvas,data){drawBarChart(canvas,data.map(x=>({label:x.label,a:x.saving,b:null})),false);}
+document.querySelectorAll(".graph-expand").forEach(btn=>btn.addEventListener("click",()=>openChartFullscreen(btn.dataset.chart)));
+const closeChartBtn=document.getElementById("closeChartFullscreen"); if(closeChartBtn)closeChartBtn.addEventListener("click",closeChartFullscreen);
+const chartOverlay=document.getElementById("chartOverlay"); if(chartOverlay)chartOverlay.addEventListener("click",e=>{if(e.target===chartOverlay)closeChartFullscreen()});
+window.addEventListener("resize",()=>{const overlay=document.getElementById("chartOverlay");if(!overlay||!overlay.classList.contains("open"))return;const title=document.getElementById("chartFullscreenTitle").textContent;const data=getPeriodData();if(title==="Risparmio mensile")drawSavingsChartTo(document.getElementById("fullscreenChart"),data);else drawGroupedChartTo(document.getElementById("fullscreenChart"),data);});
+
 function activatePage(pageId){
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active", b.dataset.page===pageId));
   document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active", p.id===pageId));
   if(pageId==="graphsPage")renderStats();
 }
 document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>activatePage(btn.dataset.page)));
-const applyPeriod=document.getElementById("applyPeriod");
-if(applyPeriod) applyPeriod.onclick=renderStats;
+document.getElementById("applyPeriod").onclick=renderStats;
 document.querySelectorAll(".preset").forEach(btn=>btn.onclick=()=>setPreset(btn.dataset.period));
 setupDefaultPeriod();
 activatePage("calendarPage");
@@ -363,8 +383,7 @@ document.getElementById("importData").onchange=e=>{
 };
 
 
-const addAccountBtn=document.getElementById("addAccountBtn");
-if(addAccountBtn) addAccountBtn.onclick=()=>{accountForm.reset();accountInitial.value="0";accountDialog.showModal()};
+document.getElementById("addAccountBtn").onclick=()=>{accountForm.reset();accountInitial.value="0";accountDialog.showModal()};
 document.getElementById("accountForm").onsubmit=e=>{e.preventDefault();accounts.push({id:Date.now(),name:accountName.value.trim(),initial:Number(accountInitial.value)});save();accountDialog.close();};
 document.getElementById("addGoalBtn").onclick=()=>{goalForm.reset();goalDialog.showModal()};
 document.getElementById("goalForm").onsubmit=e=>{e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();};
@@ -372,11 +391,9 @@ document.getElementById("addBudgetBtn").onclick=()=>{budgetForm.reset();budgetDi
 document.getElementById("budgetForm").onsubmit=e=>{e.preventDefault();budgets=budgets.filter(b=>b.category!==budgetCategory.value);budgets.push({id:Date.now(),category:budgetCategory.value,amount:Number(budgetAmount.value)});save();budgetDialog.close();};
 ["searchText","searchType","searchAccount"].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener(id==="searchText"?"input":"change",renderSearch);});
 if(document.getElementById("clearSearch"))document.getElementById("clearSearch").onclick=()=>{const q=document.getElementById("searchText"),t=document.getElementById("searchType"),a=document.getElementById("searchAccount");if(q)q.value="";if(t)t.value="all";if(a)a.value="all";renderSearch()};
-const movementFilter=document.getElementById("movementFilter");
-if(movementFilter) movementFilter.onchange=render;
+document.getElementById("movementFilter").onchange=render;
 
-const currencySelect=document.getElementById("currencySelect");
-if(currencySelect) currencySelect.onchange=e=>applyCurrency(e.target.value);
+document.getElementById("currencySelect").onchange=e=>applyCurrency(e.target.value);
 
 populateAccountSelect();populateDestinationSelect();renderCategoryShortcuts();
 applyCurrency(currency);
