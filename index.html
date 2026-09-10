@@ -111,7 +111,7 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 }
 
 
-.graph-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.graph-head>div{min-width:0}.graph-expand{flex:0 0 auto;border:0;background:var(--surface2);color:var(--text);width:40px;height:40px;border-radius:12px;font-size:22px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.chart-overlay{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);padding:14px}.chart-overlay.open{display:flex}.chart-fullscreen{width:100%;height:100%;background:var(--surface);border-radius:18px;padding:16px;display:flex;flex-direction:column;box-shadow:var(--shadow)}.chart-fullscreen-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.chart-fullscreen-head h3{margin:0}.chart-fullscreen-body{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}.chart-fullscreen-body canvas{width:100%;height:100%;max-height:none}
+.graph-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.graph-head>div{min-width:0}.graph-expand{flex:0 0 auto;border:0;background:var(--surface2);color:var(--text);width:40px;height:40px;border-radius:12px;font-size:24px;font-weight:800;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}.chart-overlay{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);padding:14px}.chart-overlay.open{display:flex}.chart-fullscreen{width:100%;height:100%;background:var(--surface);border-radius:18px;padding:16px;display:flex;flex-direction:column;box-shadow:var(--shadow)}.chart-fullscreen-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.chart-fullscreen-head h3{margin:0}.chart-fullscreen-body{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}.chart-fullscreen-body canvas{width:100%;height:100%;max-height:none}
 @media(max-width:700px) and (orientation:portrait){.chart-overlay.open .chart-fullscreen{transform:rotate(90deg);width:100vh;height:100vw;transform-origin:center center}.chart-overlay.open{align-items:center;justify-content:center;overflow:hidden;padding:0}.chart-overlay.open .chart-fullscreen-head{flex:0 0 auto}.chart-overlay.open .chart-fullscreen-body{min-height:0}.chart-overlay.open .chart-fullscreen-body canvas{width:100%;height:100%}}
 </style>
 
@@ -181,8 +181,8 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
     <div class="card"><span>Risparmio periodo</span><strong class="saving" id="periodSaving">€ 0,00</strong></div>
   </section>
   <div class="graphs-grid">
-    <section class="graph-card"><div class="graph-head"><div><h3>Entrate e uscite</h3><p class="empty-text">Confronto mensile nel periodo selezionato.</p></div><button type="button" class="graph-expand" data-chart="incomeExpenseChart" aria-label="Apri grafico in orizzontale">↗</button></div><canvas id="incomeExpenseChart" width="900" height="360"></canvas></section>
-    <section class="graph-card"><div class="graph-head"><div><h3>Risparmio mensile</h3><p class="empty-text">Differenza tra entrate e uscite per ogni mese.</p></div><button type="button" class="graph-expand" data-chart="savingsChart" aria-label="Apri grafico in orizzontale">↗</button></div><canvas id="savingsChart" width="900" height="360"></canvas></section>
+    <section class="graph-card"><div class="graph-head"><div><h3>Entrate e uscite</h3><p class="empty-text">Confronto mensile nel periodo selezionato.</p></div><button type="button" class="graph-expand" data-chart="incomeExpenseChart" aria-label="Apri grafico in orizzontale">⤢</button></div><canvas id="incomeExpenseChart" width="900" height="360"></canvas></section>
+    <section class="graph-card"><div class="graph-head"><div><h3>Risparmio mensile</h3><p class="empty-text">Differenza tra entrate e uscite per ogni mese.</p></div><button type="button" class="graph-expand" data-chart="savingsChart" aria-label="Apri grafico in orizzontale">⤢</button></div><canvas id="savingsChart" width="900" height="360"></canvas></section>
   </div>
   <section class="accounts-card">
     <div class="section-head"><h3>Conti</h3><button class="secondary" id="addAccountBtn">+ Conto</button></div>
@@ -317,10 +317,18 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 
 <script>
 const KEY="risparmi-app-v2", THEME_KEY="risparmi-theme", COLOR_KEY="risparmi-primary-color", CURRENCY_KEY="risparmi-currency";
-let movements=JSON.parse(localStorage.getItem(KEY)||"[]");
-let accounts=JSON.parse(localStorage.getItem("risparmi-accounts")||"null")||[{id:1,name:"Conto principale",initial:0}];
-let goals=JSON.parse(localStorage.getItem("risparmi-goals")||"[]");
-let budgets=JSON.parse(localStorage.getItem("risparmi-budgets")||"[]");
+function loadJSON(key,fallback){
+  try{ const value=JSON.parse(localStorage.getItem(key)||"null"); return value==null?fallback:value; }
+  catch(e){ console.warn("Dati locali non validi per",key); return fallback; }
+}
+let movements=loadJSON(KEY,[]);
+let accounts=loadJSON("risparmi-accounts",[{id:1,name:"Conto principale",initial:0}]);
+let goals=loadJSON("risparmi-goals",[]);
+let budgets=loadJSON("risparmi-budgets",[]);
+if(!Array.isArray(movements))movements=[];
+if(!Array.isArray(accounts)||!accounts.length)accounts=[{id:1,name:"Conto principale",initial:0}];
+if(!Array.isArray(goals))goals=[];
+if(!Array.isArray(budgets))budgets=[];
 let current=new Date(); current.setDate(1);
 let selected=new Date();
 
@@ -410,7 +418,7 @@ function editMovement(id){
   document.querySelectorAll(".quick-type").forEach(b=>b.classList.toggle("active",b.dataset.quickType===x.type));
   document.getElementById("destinationWrap").style.display=x.type==="transfer"?"block":"none";
   movementCategory.disabled=x.type==="transfer";movementRecurrence.disabled=true;
-  renderCategoryShortcuts();dialog.showModal();
+  renderCategoryShortcuts();openDialogSafe(dialog);
 }
 function deleteMovement(id){
   if(confirm("Vuoi eliminare questo movimento?")){movements=movements.filter(x=>x.id!==id);save();}
@@ -418,6 +426,20 @@ function deleteMovement(id){
 document.getElementById("prev").onclick=()=>{current.setMonth(current.getMonth()-1);render()};
 document.getElementById("next").onclick=()=>{current.setMonth(current.getMonth()+1);render()};
 const dialog=document.getElementById("dialog");
+function openDialogSafe(d){
+  if(!d)return;
+  try{
+    if(typeof d.showModal==="function"){d.showModal();return;}
+  }catch(e){}
+  d.setAttribute("open","");
+  d.style.display="block";d.style.position="fixed";d.style.left="50%";d.style.top="50%";
+  d.style.transform="translate(-50%,-50%)";d.style.zIndex="1000";
+}
+function closeDialogSafe(d){
+  if(!d)return;
+  try{if(typeof d.close==="function"&&d.open){d.close();return;}}catch(e){}
+  d.removeAttribute("open");d.style.display="";d.style.position="";d.style.left="";d.style.top="";d.style.transform="";d.style.zIndex="";
+}
 const movementForm=document.getElementById("form");
 const movementType=document.getElementById("type");
 const movementAmount=document.getElementById("amount");
@@ -515,7 +537,7 @@ movementForm.onsubmit=e=>{
 };
 
 document.getElementById("goalForm").onsubmit=e=>{
-  e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();e.target.reset();
+  e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();closeDialogSafe(goalDialog);e.target.reset();
 };
 
 function populateDestinationSelect(){
@@ -696,12 +718,12 @@ document.getElementById("importData").onchange=e=>{
 };
 
 
-document.getElementById("addAccountBtn").onclick=()=>{accountForm.reset();accountInitial.value="0";accountDialog.showModal()};
-document.getElementById("accountForm").onsubmit=e=>{e.preventDefault();accounts.push({id:Date.now(),name:accountName.value.trim(),initial:Number(accountInitial.value)});save();accountDialog.close();};
-document.getElementById("addGoalBtn").onclick=()=>{goalForm.reset();goalDialog.showModal()};
+document.getElementById("addAccountBtn").onclick=()=>{accountForm.reset();accountInitial.value="0";openDialogSafe(accountDialog)};
+document.getElementById("accountForm").onsubmit=e=>{e.preventDefault();accounts.push({id:Date.now(),name:accountName.value.trim(),initial:Number(accountInitial.value)});save();closeDialogSafe(accountDialog);};
+document.getElementById("addGoalBtn").onclick=()=>{goalForm.reset();openDialogSafe(goalDialog)};
 document.getElementById("goalForm").onsubmit=e=>{e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();};
-document.getElementById("addBudgetBtn").onclick=()=>{budgetForm.reset();budgetDialog.showModal()};
-document.getElementById("budgetForm").onsubmit=e=>{e.preventDefault();budgets=budgets.filter(b=>b.category!==budgetCategory.value);budgets.push({id:Date.now(),category:budgetCategory.value,amount:Number(budgetAmount.value)});save();budgetDialog.close();};
+document.getElementById("addBudgetBtn").onclick=()=>{budgetForm.reset();openDialogSafe(budgetDialog)};
+document.getElementById("budgetForm").onsubmit=e=>{e.preventDefault();budgets=budgets.filter(b=>b.category!==budgetCategory.value);budgets.push({id:Date.now(),category:budgetCategory.value,amount:Number(budgetAmount.value)});save();closeDialogSafe(budgetDialog);};
 ["searchText","searchType","searchAccount"].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener(id==="searchText"?"input":"change",renderSearch);});
 if(document.getElementById("clearSearch"))document.getElementById("clearSearch").onclick=()=>{const q=document.getElementById("searchText"),t=document.getElementById("searchType"),a=document.getElementById("searchAccount");if(q)q.value="";if(t)t.value="all";if(a)a.value="all";renderSearch()};
 document.getElementById("movementFilter").onchange=render;
@@ -725,7 +747,9 @@ function initializeCalendarView(){
 }
 if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",initializeCalendarView,{once:true});
 else initializeCalendarView();
-window.addEventListener("pageshow",initializeCalendarView);
+window.addEventListener("pageshow",()=>{
+  if(!document.querySelector(".page.active")) initializeCalendarView();
+});
 </script>
 
 <script>

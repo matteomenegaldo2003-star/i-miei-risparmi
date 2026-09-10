@@ -40,7 +40,7 @@ function applyCurrency(value){
   render();
 }
 
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});
+(function(){const mq=matchMedia("(prefers-color-scheme: dark)"),fn=()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")};if(typeof mq.addEventListener==="function")mq.addEventListener("change",fn);else if(typeof mq.addListener==="function")mq.addListener(fn);})();
 document.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
 document.querySelectorAll(".color-swatch").forEach(b=>b.onclick=()=>setPrimaryColor(b.dataset.color,b.dataset.contrast));
 
@@ -88,7 +88,7 @@ function editMovement(id){
   document.querySelectorAll(".quick-type").forEach(b=>b.classList.toggle("active",b.dataset.quickType===x.type));
   document.getElementById("destinationWrap").style.display=x.type==="transfer"?"block":"none";
   movementCategory.disabled=x.type==="transfer";movementRecurrence.disabled=true;
-  renderCategoryShortcuts();dialog.showModal();
+  renderCategoryShortcuts();openDialogSafe(dialog);
 }
 function deleteMovement(id){
   if(confirm("Vuoi eliminare questo movimento?")){movements=movements.filter(x=>x.id!==id);save();}
@@ -96,6 +96,8 @@ function deleteMovement(id){
 document.getElementById("prev").onclick=()=>{current.setMonth(current.getMonth()-1);render()};
 document.getElementById("next").onclick=()=>{current.setMonth(current.getMonth()+1);render()};
 const dialog=document.getElementById("dialog");
+function openDialogSafe(d){if(!d)return;try{if(typeof d.showModal==="function"){d.showModal();return;}}catch(e){}d.setAttribute("open","");d.style.display="block";d.style.position="fixed";d.style.left="50%";d.style.top="50%";d.style.transform="translate(-50%,-50%)";d.style.zIndex="1000";}
+function closeDialogSafe(d){if(!d)return;try{if(typeof d.close==="function"&&d.open){d.close();return;}}catch(e){}d.removeAttribute("open");d.style.display="";d.style.position="";d.style.left="";d.style.top="";d.style.transform="";d.style.zIndex="";}
 const movementForm=document.getElementById("form");
 const movementType=document.getElementById("type");
 const movementAmount=document.getElementById("amount");
@@ -177,7 +179,7 @@ movementForm.onsubmit=e=>{
 };
 
 document.getElementById("goalForm").onsubmit=e=>{
-  e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();e.target.reset();
+  e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();closeDialogSafe(goalDialog);e.target.reset();
 };
 
 function populateDestinationSelect(){
@@ -383,12 +385,12 @@ document.getElementById("importData").onchange=e=>{
 };
 
 
-document.getElementById("addAccountBtn").onclick=()=>{accountForm.reset();accountInitial.value="0";accountDialog.showModal()};
-document.getElementById("accountForm").onsubmit=e=>{e.preventDefault();accounts.push({id:Date.now(),name:accountName.value.trim(),initial:Number(accountInitial.value)});save();accountDialog.close();};
-document.getElementById("addGoalBtn").onclick=()=>{goalForm.reset();goalDialog.showModal()};
-document.getElementById("goalForm").onsubmit=e=>{e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();};
-document.getElementById("addBudgetBtn").onclick=()=>{budgetForm.reset();budgetDialog.showModal()};
-document.getElementById("budgetForm").onsubmit=e=>{e.preventDefault();budgets=budgets.filter(b=>b.category!==budgetCategory.value);budgets.push({id:Date.now(),category:budgetCategory.value,amount:Number(budgetAmount.value)});save();budgetDialog.close();};
+document.getElementById("addAccountBtn").onclick=()=>{accountForm.reset();accountInitial.value="0";openDialogSafe(accountDialog)};
+document.getElementById("accountForm").onsubmit=e=>{e.preventDefault();accounts.push({id:Date.now(),name:accountName.value.trim(),initial:Number(accountInitial.value)});save();closeDialogSafe(accountDialog);};
+document.getElementById("addGoalBtn").onclick=()=>{goalForm.reset();openDialogSafe(goalDialog)};
+document.getElementById("goalForm").onsubmit=e=>{e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();closeDialogSafe(goalDialog);};
+document.getElementById("addBudgetBtn").onclick=()=>{budgetForm.reset();openDialogSafe(budgetDialog)};
+document.getElementById("budgetForm").onsubmit=e=>{e.preventDefault();budgets=budgets.filter(b=>b.category!==budgetCategory.value);budgets.push({id:Date.now(),category:budgetCategory.value,amount:Number(budgetAmount.value)});save();closeDialogSafe(budgetDialog);};
 ["searchText","searchType","searchAccount"].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener(id==="searchText"?"input":"change",renderSearch);});
 if(document.getElementById("clearSearch"))document.getElementById("clearSearch").onclick=()=>{const q=document.getElementById("searchText"),t=document.getElementById("searchType"),a=document.getElementById("searchAccount");if(q)q.value="";if(t)t.value="all";if(a)a.value="all";renderSearch()};
 document.getElementById("movementFilter").onchange=render;
