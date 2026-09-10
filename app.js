@@ -40,9 +40,7 @@ function applyCurrency(value){
   render();
 }
 
-const colorSchemeQuery=matchMedia("(prefers-color-scheme: dark)");
-if(colorSchemeQuery.addEventListener){colorSchemeQuery.addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});}
-else if(colorSchemeQuery.addListener){colorSchemeQuery.addListener(()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});
 document.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
 document.querySelectorAll(".color-swatch").forEach(b=>b.onclick=()=>setPrimaryColor(b.dataset.color,b.dataset.contrast));
 
@@ -182,6 +180,13 @@ document.getElementById("goalForm").onsubmit=e=>{
   e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();e.target.reset();
 };
 
+function populateDestinationSelect(){
+  const s=document.getElementById("destinationAccount");
+  if(!s)return;
+  const current=s.value;
+  s.innerHTML=accounts.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
+  if([...s.options].some(o=>o.value===current))s.value=current;
+}
 function populateAccountSelect(){
   const selects=[document.getElementById("account"),document.getElementById("searchAccount")];
   selects.forEach((s,si)=>{
@@ -334,14 +339,12 @@ setupDefaultPeriod();
 activatePage("calendarPage");
 
 
-const exportDataEl=document.getElementById("exportData");
-if(exportDataEl) exportDataEl.onclick=()=>{
+document.getElementById("exportData").onclick=()=>{
   const payload={version:3,exportedAt:new Date().toISOString(),movements,accounts,goals,budgets,theme:localStorage.getItem(THEME_KEY)||"dark",color:localStorage.getItem(COLOR_KEY)||"#0A84FF",currency:currency};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="i-miei-risparmi-backup.json";a.click();URL.revokeObjectURL(a.href);
 };
-const importDataEl=document.getElementById("importData");
-if(importDataEl) importDataEl.onchange=e=>{
+document.getElementById("importData").onchange=e=>{
   const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=()=>{
