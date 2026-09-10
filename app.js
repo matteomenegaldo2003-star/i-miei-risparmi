@@ -157,16 +157,25 @@ document.querySelectorAll(".quick-type").forEach(b=>b.onclick=()=>{
   document.getElementById("destinationWrap").style.display=movementType.value==="transfer"?"block":"none";
   movementCategory.disabled=movementType.value==="transfer";movementRecurrence.disabled=movementType.value==="transfer";
 });
-const openMovement=()=>{
-  movementForm.reset();populateAccountSelect();populateDestinationSelect();renderCategoryShortcuts();
-  movementType.value="out";document.querySelectorAll(".quick-type").forEach(x=>x.classList.toggle("active",x.dataset.quickType==="out"));
-  document.getElementById("destinationWrap").style.display="none";movementCategory.disabled=false;movementRecurrence.disabled=false;
-  movementEditId.value="";movementDialogTitle.textContent="Nuovo movimento";movementDate.value=iso(selected);dialog.showModal();
+function openMovement(){
+  if(dialog.open) dialog.close();
+  movementForm.reset();
+  populateAccountSelect();
+  populateDestinationSelect();
+  renderCategoryShortcuts();
+  movementType.value="out";
+  document.querySelectorAll(".quick-type").forEach(x=>x.classList.toggle("active",x.dataset.quickType==="out"));
+  document.getElementById("destinationWrap").style.display="none";
+  movementCategory.disabled=false;
+  movementRecurrence.disabled=false;
+  movementEditId.value="";
+  movementDialogTitle.textContent="Nuovo movimento";
+  movementDate.value=iso(selected);
+  try{ dialog.showModal(); }catch(e){ dialog.setAttribute("open",""); }
   setTimeout(()=>movementAmount.focus(),80);
-};
-document.getElementById("fab").onclick=openMovement;
-
-document.getElementById("addBtn").onclick=openMovement;
+}
+document.getElementById("fab").addEventListener("click",openMovement);
+document.getElementById("addBtn").addEventListener("click",openMovement);
 document.getElementById("cancel").onclick=()=>dialog.close();
 movementForm.onsubmit=e=>{
   e.preventDefault();
@@ -340,15 +349,16 @@ function drawBarChart(canvas,data,grouped){
 }
 
 
-document.querySelectorAll(".nav-btn").forEach(btn=>btn.onclick=()=>{
-  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  btn.classList.add("active");document.getElementById(btn.dataset.page).classList.add("active");
-  if(btn.dataset.page==="graphsPage")renderStats();
-});
+function activatePage(pageId){
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active", b.dataset.page===pageId));
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active", p.id===pageId));
+  if(pageId==="graphsPage")renderStats();
+}
+document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>activatePage(btn.dataset.page)));
 document.getElementById("applyPeriod").onclick=renderStats;
 document.querySelectorAll(".preset").forEach(btn=>btn.onclick=()=>setPreset(btn.dataset.period));
 setupDefaultPeriod();
+activatePage("calendarPage");
 
 
 document.getElementById("exportData").onclick=()=>{

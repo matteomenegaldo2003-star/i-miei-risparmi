@@ -1,4 +1,4 @@
-const CACHE = "i-miei-risparmi-v6";
+const CACHE = "i-miei-risparmi-v7";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-180.png", "./icons/icon-192.png", "./icons/icon-512.png"];
 
 self.addEventListener("install", event => {

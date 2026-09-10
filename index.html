@@ -101,6 +101,14 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
   .graphs-grid{gap:12px}.graph-card canvas{height:220px}
 }
 
+
+/* iPhone fixes */
+.fab,.nav-btn,.details .add{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media(max-width:700px){
+  .details .actions{position:relative;z-index:5}
+  .details .add,.fab{min-height:44px}
+}
+
 </style>
 
 <link rel="manifest" href="manifest.webmanifest">
@@ -172,6 +180,18 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
     <section class="graph-card"><h3>Entrate e uscite</h3><p class="empty-text">Confronto mensile nel periodo selezionato.</p><canvas id="incomeExpenseChart" width="900" height="360"></canvas></section>
     <section class="graph-card"><h3>Risparmio mensile</h3><p class="empty-text">Differenza tra entrate e uscite per ogni mese.</p><canvas id="savingsChart" width="900" height="360"></canvas></section>
   </div>
+  <section class="accounts-card">
+    <div class="section-head"><h3>Conti</h3><button class="secondary" id="addAccountBtn">+ Conto</button></div>
+    <div id="accountsList"></div>
+  </section>
+  <section class="budgets-card">
+    <div class="section-head"><h3>Budget mensili</h3><button class="secondary" id="addBudgetBtn">+ Budget</button></div>
+    <div id="budgetsList"></div>
+  </section>
+  <section class="goal-card">
+    <div class="section-head"><h3>Obiettivi di risparmio</h3><button class="secondary" id="addGoalBtn">+ Obiettivo</button></div>
+    <div id="goalView"></div>
+  </section>
 </section>
 
 <section class="page" id="settingsPage">
@@ -222,18 +242,9 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
     <div class="backup-actions"><button class="secondary" id="exportData">Esporta dati</button><label class="secondary import-label">Importa dati<input id="importData" type="file" accept=".json" hidden></label></div>
   </section>
 
-  <section class="accounts-card">
-    <div class="section-head"><h3>Conti</h3><button class="secondary" id="addAccountBtn">+ Conto</button></div>
-    <div id="accountsList"></div>
-  </section>
-  <section class="budgets-card">
-    <div class="section-head"><h3>Budget mensili</h3><button class="secondary" id="addBudgetBtn">+ Budget</button></div>
-    <div id="budgetsList"></div>
-  </section>
-  <section class="goal-card">
-    <div class="section-head"><h3>Obiettivi di risparmio</h3><button class="secondary" id="addGoalBtn">+ Obiettivo</button></div>
-    <div id="goalView"></div>
-  </section>
+
+
+
 </section>
 <button class="fab" id="fab" aria-label="Aggiungi movimento">＋</button>
 
