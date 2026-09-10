@@ -347,7 +347,9 @@ function applyCurrency(value){
   render();
 }
 
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});
+const colorSchemeQuery=matchMedia("(prefers-color-scheme: dark)");
+if(colorSchemeQuery.addEventListener){colorSchemeQuery.addEventListener("change",()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});}
+else if(colorSchemeQuery.addListener){colorSchemeQuery.addListener(()=>{if((localStorage.getItem(THEME_KEY)||"dark")==="system")setTheme("system")});}
 document.querySelectorAll(".theme-btn").forEach(b=>b.onclick=()=>setTheme(b.dataset.themeChoice));
 document.querySelectorAll(".color-swatch").forEach(b=>b.onclick=()=>setPrimaryColor(b.dataset.color,b.dataset.contrast));
 
