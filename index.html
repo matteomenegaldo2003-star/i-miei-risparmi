@@ -511,7 +511,8 @@ function renderStats(){
 }
 function setupDefaultPeriod(){
   const now=new Date(),start=new Date(now.getFullYear(),0,1),end=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  periodStart.value=iso(start);periodEnd.value=iso(end);
+  document.getElementById("periodStart").value=iso(start);
+  document.getElementById("periodEnd").value=iso(end);
 }
 function setPreset(kind){
   const now=new Date(),end=iso(now);let start;
@@ -519,7 +520,9 @@ function setPreset(kind){
   else if(kind==="quarter")start=iso(new Date(now.getFullYear(),now.getMonth()-2,1));
   else if(kind==="year")start=iso(new Date(now.getFullYear(),0,1));
   else {start=movements.length?movements.reduce((min,x)=>x.date<min?x.date:min,iso(now)):iso(new Date(now.getFullYear(),0,1))}
-  periodStart.value=start;periodEnd.value=end;renderStats();
+  document.getElementById("periodStart").value=start;
+  document.getElementById("periodEnd").value=end;
+  renderStats();
 }
 function drawGroupedChart(data){
   drawBarChart(document.getElementById("incomeExpenseChart"),data.map(x=>({label:x.label,a:x.income,b:x.expense})),true);
@@ -584,14 +587,14 @@ document.getElementById("importData").onchange=e=>{
 };
 
 document.getElementById("settingsToggle").onclick=()=>document.getElementById("settingsPanel").classList.toggle("hidden");
-document.getElementById("addAccountBtn").onclick=()=>{accountForm.reset();accountInitial.value="0";accountDialog.showModal()};
-document.getElementById("accountForm").onsubmit=e=>{e.preventDefault();accounts.push({id:Date.now(),name:accountName.value.trim(),initial:Number(accountInitial.value)});save();accountDialog.close();};
-document.getElementById("addGoalBtn").onclick=()=>{goalForm.reset();goalDialog.showModal()};
-document.getElementById("goalForm").onsubmit=e=>{e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();goalDialog.close();};
-document.getElementById("addBudgetBtn").onclick=()=>{budgetForm.reset();budgetDialog.showModal()};
-document.getElementById("budgetForm").onsubmit=e=>{e.preventDefault();budgets=budgets.filter(b=>b.category!==budgetCategory.value);budgets.push({id:Date.now(),category:budgetCategory.value,amount:Number(budgetAmount.value)});save();budgetDialog.close();};
+document.getElementById("addAccountBtn").onclick=()=>{document.getElementById("accountForm").reset();document.getElementById("accountInitial").value="0";document.getElementById("accountDialog").showModal()};
+document.getElementById("accountForm").onsubmit=e=>{e.preventDefault();accounts.push({id:Date.now(),name:accountName.value.trim(),initial:Number(accountInitial.value)});save();document.getElementById("accountDialog").close();};
+document.getElementById("addGoalBtn").onclick=()=>{document.getElementById("goalForm").reset();document.getElementById("goalDialog").showModal()};
+document.getElementById("goalForm").onsubmit=e=>{e.preventDefault();goals.push({id:Date.now(),name:goalName.value.trim(),amount:Number(goalAmount.value)});save();document.getElementById("goalDialog").close();};
+document.getElementById("addBudgetBtn").onclick=()=>{document.getElementById("budgetForm").reset();document.getElementById("budgetDialog").showModal()};
+document.getElementById("budgetForm").onsubmit=e=>{e.preventDefault();budgets=budgets.filter(b=>b.category!==budgetCategory.value);budgets.push({id:Date.now(),category:budgetCategory.value,amount:Number(budgetAmount.value)});save();document.getElementById("budgetDialog").close();};
 ["searchText","searchType","searchAccount"].forEach(id=>document.getElementById(id).addEventListener(id==="searchText"?"input":"change",renderSearch));
-document.getElementById("clearSearch").onclick=()=>{searchText.value="";searchType.value="all";searchAccount.value="all";renderSearch()};
+document.getElementById("clearSearch").onclick=()=>{document.getElementById("searchText").value="";document.getElementById("searchType").value="all";document.getElementById("searchAccount").value="all";renderSearch()};
 document.getElementById("movementFilter").onchange=render;
 populateAccountSelect();populateDestinationSelect();renderCategoryShortcuts();
 
@@ -602,6 +605,69 @@ render();
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
 }
+</script>
+
+<script>
+/* Stabilizzazione interfaccia: calendario iniziale + pulsante nuovo movimento. */
+(function(){
+  function safeCalendar(){
+    const box=document.getElementById("days");
+    const title=document.getElementById("monthTitle");
+    if(!box||!title) return;
+    const y=current.getFullYear(), m=current.getMonth();
+    title.textContent=current.toLocaleDateString("it-IT",{month:"long",year:"numeric"});
+    box.innerHTML="";
+    const first=(new Date(y,m,1).getDay()+6)%7;
+    const last=new Date(y,m+1,0).getDate();
+    for(let i=0;i<first;i++){
+      const empty=document.createElement("div"); empty.className="day empty"; box.appendChild(empty);
+    }
+    for(let d=1;d<=last;d++){
+      const date=new Date(y,m,d), key=iso(date), cell=document.createElement("div");
+      cell.className="day"+(iso(selected)===key?" selected":"")+(key===iso(new Date())?" today":"");
+      const num=document.createElement("div"); num.className="num"; num.textContent=d; cell.appendChild(num);
+      movements.filter(x=>x.date===key).forEach(x=>{
+        const el=document.createElement("div"); el.className="mov "+x.type;
+        el.textContent=(x.type==="in"?"+ ":x.type==="out"?"- ":"↔ ")+eur(x.amount)+" "+x.description;
+        cell.appendChild(el);
+      });
+      cell.addEventListener("click",()=>{selected=new Date(y,m,d); render();});
+      box.appendChild(cell);
+    }
+  }
+
+  function safeOpenMovement(){
+    const dlg=document.getElementById("dialog");
+    if(!dlg) return;
+    movementForm.reset();
+    populateAccountSelect();
+    populateDestinationSelect();
+    renderCategoryShortcuts();
+    movementType.value="out";
+    document.querySelectorAll(".quick-type").forEach(x=>x.classList.toggle("active",x.dataset.quickType==="out"));
+    document.getElementById("destinationWrap").style.display="none";
+    movementCategory.disabled=false;
+    movementRecurrence.disabled=false;
+    movementEditId.value="";
+    movementDialogTitle.textContent="Nuovo movimento";
+    movementDate.value=iso(selected);
+    if(typeof dlg.showModal==="function") dlg.showModal();
+    else dlg.setAttribute("open","");
+    setTimeout(()=>movementAmount.focus(),80);
+  }
+
+  function boot(){
+    // Il calendario è sempre la pagina iniziale.
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    document.getElementById("calendarPage")?.classList.add("active");
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page==="calendarPage"));
+    safeCalendar();
+    const add=document.getElementById("addBtn"), fab=document.getElementById("fab");
+    if(add){ add.onclick=null; add.addEventListener("click",e=>{e.preventDefault();safeOpenMovement();}); }
+    if(fab){ fab.onclick=null; fab.addEventListener("click",e=>{e.preventDefault();safeOpenMovement();}); }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
+})();
 </script>
 </body>
 </html>
