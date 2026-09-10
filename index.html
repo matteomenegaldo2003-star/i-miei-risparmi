@@ -20,7 +20,7 @@ html[data-theme="dark"]{
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);transition:.2s}
 html[data-theme="dark"] body{background:#000;color:#f5f5f7}
 button,input,select{font:inherit}
-.app{max-width:1100px;margin:auto;padding:24px}
+.app{max-width:1180px;margin:auto;padding:24px 28px 110px}
 header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
 h1{margin:0;font-size:28px}.top-actions{display:flex;align-items:center;gap:10px}
 .balance,.card,.calendar,.details,.goal-card,.chart-card,.settings-card{background:var(--surface);box-shadow:var(--shadow)}
@@ -82,6 +82,54 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
 .app{padding:12px 12px 92px}header{align-items:flex-start;flex-direction:column}.summary{grid-template-columns:1fr}.top-actions{width:100%;flex-wrap:wrap}.balance{width:100%}.day{min-height:70px;padding:6px}.mov{font-size:10px}.goal-form,.period-form,.search-grid{grid-template-columns:1fr}.week div{font-size:10px}.bottom-nav{position:fixed;left:12px;right:12px;bottom:8px;max-width:none;margin:0}.nav-btn{flex:1;padding:9px 12px}.fab{display:block}
 .dialog-hint{line-height:1.35}.quick-types{gap:6px}.quick-type{padding:11px 6px;font-size:12px}
 }
+
+/* iPhone-first redesign */
+@media(max-width:700px){
+  :root{--radius:22px}
+  body{font-size:16px;-webkit-tap-highlight-color:transparent}
+  .app{width:100%;max-width:560px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(104px + env(safe-area-inset-bottom));}
+  header{gap:14px;margin-bottom:18px}
+  header>div:first-child{width:100%}
+  h1{font-size:30px;letter-spacing:-.5px}
+  .app-subtitle{font-size:14px;margin-top:5px}
+  .top-actions{width:100%;display:grid;grid-template-columns:1fr;gap:10px}
+  .balance{width:100%;padding:16px 18px;border-radius:20px;display:flex;justify-content:space-between;align-items:center}
+  .balance small{font-size:13px}.balance strong{font-size:26px}
+  .settings-card{border-radius:20px!important}
+  .theme-row{gap:7px}.theme-btn{min-height:48px;font-size:14px}
+  .summary{gap:10px;margin-bottom:14px}
+  .card{padding:17px 16px;border-radius:20px;min-height:82px}
+  .card span{font-size:13px}.card strong{font-size:23px;margin-top:5px}
+  .calendar,.details,.goal-card,.chart-card,.settings-card,.accounts-card,.budgets-card,.search-card{padding:16px;border-radius:22px}
+  .monthbar{margin-bottom:12px}.monthbar h2{font-size:20px}.monthbar button{width:44px;height:44px;padding:0;font-size:24px}
+  .week,.days{gap:5px}
+  .week div{font-size:10px;padding:6px 0}
+  .day{min-height:78px;border-radius:15px;padding:8px 6px;overflow:hidden}
+  .day.today .num{width:28px;height:28px}.num{font-size:14px}
+  .mov{font-size:9px;line-height:1.25;margin-top:5px}
+  .details{margin-top:12px}.details-head{align-items:flex-start}.details-head h3{font-size:20px}
+  .details .quick-filter select{min-width:105px;width:auto;padding:10px 12px}
+  .row{padding:14px 0}.row-actions{gap:8px}.icon-btn{width:40px;height:40px;padding:0;font-size:16px}
+  .actions{margin-top:12px}.add{min-height:48px;border-radius:15px;padding:11px 16px;font-weight:700}
+  .fab{right:18px;bottom:calc(94px + env(safe-area-inset-bottom));width:58px;height:58px}
+  .period-form{gap:10px}.period-form input{min-height:48px}.period-presets{overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px;-webkit-overflow-scrolling:touch}.preset{white-space:nowrap;min-height:44px}
+  .search-grid{gap:10px}.search-grid input,.search-grid select,.search-grid button{min-height:48px}
+  .chart-card{overflow:hidden}.chart-card canvas{height:210px}
+  .goal-form{gap:10px}.goal-form input,.goal-form button{min-height:48px}
+  dialog{width:calc(100vw - 24px);max-width:520px;max-height:88vh;border-radius:24px;padding:20px 18px;margin:auto}
+  dialog form{gap:14px}dialog input,dialog select{min-height:50px;border-radius:14px;font-size:16px}dialog .quick-type{min-height:52px;border-radius:14px}
+  .form-actions{position:sticky;bottom:-1px;background:var(--surface);padding-top:8px}
+  .bottom-nav{left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));border-radius:22px;padding:7px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .nav-btn{min-height:58px;padding:8px 10px;border-radius:16px}.nav-btn span:last-child{font-size:11px}
+}
+@media(min-width:701px){.mobile-section{display:none!important}}
+.insight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.insight{padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--surface2)}
+.insight small{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.insight strong{font-size:18px}
+.category-list{display:grid;gap:9px;margin-top:12px}.category-line{display:grid;grid-template-columns:105px 1fr 75px;gap:8px;align-items:center;font-size:13px}.category-bar{height:9px;background:var(--surface2);border-radius:99px;overflow:hidden}.category-bar>div{height:100%;background:var(--primary);border-radius:99px}.category-line strong{text-align:right}
+.forecast-box{padding:16px;border:1px solid var(--border);border-radius:16px;background:var(--surface2);margin-top:12px}.forecast-main{font-size:27px;font-weight:800;margin:5px 0}.muted{color:var(--muted)}
+.month-recap{line-height:1.55}.month-recap strong{font-size:18px}
+
 </style>
 
 <link rel="manifest" href="manifest.webmanifest">
@@ -163,6 +211,29 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
     <div class="card"><span>Risparmio periodo</span><strong class="saving" id="periodSaving">€ 0,00</strong></div>
   </section>
 
+  <section class="chart-card">
+    <div class="section-head"><h3>📌 Il mio periodo</h3></div>
+    <div class="insight-grid">
+      <div class="insight"><small>Tasso di risparmio</small><strong id="savingRate">0%</strong></div>
+      <div class="insight"><small>Media mensile risparmiata</small><strong id="avgSaving">€ 0,00</strong></div>
+      <div class="insight"><small>Miglior mese</small><strong id="bestMonth">—</strong></div>
+      <div class="insight"><small>Spesa media mensile</small><strong id="avgExpense">€ 0,00</strong></div>
+    </div>
+    <div class="month-recap" id="monthRecap" style="margin-top:14px"></div>
+  </section>
+
+  <section class="chart-card">
+    <h3>🧾 Dove spendi di più</h3>
+    <p class="empty-text">Le categorie con più uscite nel periodo selezionato.</p>
+    <div id="categoryAnalysis" class="category-list"></div>
+  </section>
+
+  <section class="chart-card">
+    <h3>🔮 Previsione risparmio</h3>
+    <p class="empty-text">Una stima basata sul tuo ritmo medio di risparmio nel periodo selezionato.</p>
+    <div class="forecast-box" id="forecastBox"></div>
+  </section>
+
   <section class="search-card">
     <div class="section-head"><h3><span class="ui-icon icon-blue">⌕</span>Cerca movimenti</h3></div>
     <div class="search-grid">
@@ -192,8 +263,13 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
   </section>
 
   <section class="goal-card">
-    <h3><span class="ui-icon icon-gold">★</span>Obiettivi di risparmio</h3>
+    <div class="section-head"><h3><span class="ui-icon icon-gold">★</span>Obiettivi di risparmio</h3><button class="secondary" id="addGoalBtn">+ Obiettivo</button></div>
     <div id="goalView"></div>
+  </section>
+
+  <section class="accounts-card">
+    <div class="section-head"><h3><span class="ui-icon icon-green">€</span>I miei conti</h3><button class="secondary" id="addAccountBtn">+ Conto</button></div>
+    <div id="accountsList"></div>
   </section>
 </section>
 <button class="fab" id="fab" aria-label="Aggiungi movimento">＋</button>
@@ -707,9 +783,38 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
     const data = getPeriodData();
     const income = data.reduce((a,x)=>a+x.income,0);
     const expense = data.reduce((a,x)=>a+x.expense,0);
+    const saving = income-expense;
     if ($("periodIncome")) $("periodIncome").textContent = eur(income);
     if ($("periodExpense")) $("periodExpense").textContent = eur(expense);
-    if ($("periodSaving")) $("periodSaving").textContent = eur(income-expense);
+    if ($("periodSaving")) $("periodSaving").textContent = eur(saving);
+    const months = Math.max(1,data.length);
+    if ($("savingRate")) $("savingRate").textContent = (income > 0 ? (saving/income*100) : 0).toFixed(1) + "%";
+    if ($("avgSaving")) $("avgSaving").textContent = eur(saving/months);
+    if ($("avgExpense")) $("avgExpense").textContent = eur(expense/months);
+    const best = data.length ? data.reduce((a,b)=>b.saving>a.saving?b:a,data[0]) : null;
+    if ($("bestMonth")) $("bestMonth").textContent = best ? `${best.label} · ${eur(best.saving)}` : "—";
+    const recap = $("monthRecap");
+    if (recap) {
+      const tone = saving >= 0 ? "Positivo" : "Da migliorare";
+      recap.innerHTML = `<strong>Risultato: ${tone}</strong><br><span class="muted">Nel periodo hai messo da parte ${eur(saving)} su ${eur(income)} di entrate.</span>`;
+    }
+    const cats = {};
+    movements.forEach(x => {
+      const start=$("periodStart")?.value,end=$("periodEnd")?.value;
+      if (x.type === "out" && x.date >= start && x.date <= end) cats[x.category||"Altro"]=(cats[x.category||"Altro"]||0)+Number(x.amount||0);
+    });
+    const catEl=$("categoryAnalysis");
+    if (catEl) {
+      const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,8);
+      const max=entries[0]?.[1]||1;
+      catEl.innerHTML=entries.length ? entries.map(([c,v])=>`<div class="category-line"><span>${escapeHtml(c)}</span><div class="category-bar"><div style="width:${v/max*100}%"></div></div><strong>${eur(v)}</strong></div>`).join("") : '<p class="empty-text">Ancora nessuna spesa nel periodo.</p>';
+    }
+    const forecast=$("forecastBox");
+    if(forecast){
+      const monthly=saving/months;
+      const f3=monthly*3,f6=monthly*6,f12=monthly*12;
+      forecast.innerHTML=`<div class="muted">Se mantieni questo ritmo medio:</div><div class="forecast-main">+${eur(f12)}</div><div class="muted">risparmio stimato nei prossimi 12 mesi</div><div class="insight-grid"><div class="insight"><small>3 mesi</small><strong>${eur(f3)}</strong></div><div class="insight"><small>6 mesi</small><strong>${eur(f6)}</strong></div></div>`;
+    }
     drawBarChart($("incomeExpenseChart"), data, true);
     drawBarChart($("savingsChart"), data, false);
   }
@@ -779,6 +884,7 @@ form{display:grid;gap:12px}label{font-size:13px;font-weight:600}input,select{wid
     // Inizializzazione difensiva: il calendario è sempre la prima pagina.
     setTheme(localStorage.getItem(THEME_KEY) || "dark");
     document.querySelectorAll(".theme-btn").forEach(b => b.addEventListener("click", () => setTheme(b.dataset.themeChoice)));
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (localStorage.getItem(THEME_KEY) === "system") setTheme("system"); });
     $("settingsToggle")?.addEventListener("click", () => $("settingsPanel")?.classList.toggle("hidden"));
 
     document.querySelectorAll(".nav-btn").forEach(btn => btn.addEventListener("click", () => {
